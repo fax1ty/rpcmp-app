@@ -150,6 +150,5 @@ export class StyleManager {
 
     constructor(theme: 'light' | 'dark') {
         this.theme = theme;
-        this.isInit = false;
     }
 }
