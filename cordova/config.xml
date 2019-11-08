@@ -18,7 +18,7 @@
 
   <!-- Соц.вход -->
   <plugin name="cordova-vk-auth" spec="https://github.com/iRapoo/cordova-vk-auth.git">
-    <variable name="VK_APP_ID" value="vk7201477" />
+    <variable name="VK_APP_ID" value="7201477" />
   </plugin>
   <!-- <plugin name="cordova-plugin-googleplus" spec="https://github.com/EddyVerbruggen/cordova-plugin-googleplus.git" /> -->
 
