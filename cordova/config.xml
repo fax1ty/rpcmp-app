@@ -8,14 +8,18 @@
   <preference name="Orientation" value="portrait" />
   <preference name="UseStrictSSL" value="false" />
 
-  <plugin name="tabris-plugin-maps" spec="https://github.com/fax1ty/tabris-plugin-maps.git" />
+  <plugin name="tabris-plugin-maps" spec="https://github.com/fax1ty/tabris-plugin-maps.git">
+    <variable name="ANDROID_API_KEY" value="$ANDROID_API_KEY" />
+  </plugin>
   <plugin name="cordova-plugin-vibration" spec="https://github.com/maxappsmobile/cordova-plugin-vibration.git" />
   <plugin name="cordova-plugin-native-geolocation" spec="https://github.com/fax1ty/cordova-plugin-native-geolocation.git" />
   <!-- <plugin name="tabris-plugin-firebase" spec="https://github.com/eclipsesource/tabris-plugin-firebase.git" /> -->
   <plugin name="cordova-plugin-network-information" spec="https://github.com/apache/cordova-plugin-network-information.git" />
 
   <!-- Соц.вход -->
-  <plugin name="cordova-vk-auth" spec="https://github.com/iRapoo/cordova-vk-auth.git" />
+  <plugin name="cordova-vk-auth" spec="https://github.com/iRapoo/cordova-vk-auth.git">
+    <variable name="VK_APP_ID" value="vk7201477" />
+  </plugin>
   <!-- <plugin name="cordova-plugin-googleplus" spec="https://github.com/EddyVerbruggen/cordova-plugin-googleplus.git" /> -->
 
   <platform name="android">
