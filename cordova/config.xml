@@ -21,6 +21,7 @@
     <variable name="VK_APP_ID" value="7201477" />
   </plugin>
   <plugin name="cordova-plugin-googleplus" source="https://github.com/EddyVerbruggen/cordova-plugin-googleplus.git">
+    <variable name="PLAY_SERVICES_VERSION" value="17.0.0" />
     <variable name="REVERSED_CLIENT_ID" value="$REVERSED_CLIENT_ID" />
   </plugin>
 
