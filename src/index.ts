@@ -1,4 +1,4 @@
-import { contentView, NavigationView, ActivityIndicator } from 'tabris';
+import { contentView, NavigationView } from 'tabris';
 import rpcmp_api = require('./libs/rpcmp_api');
 import { StyleManager } from './libs/components';
 import { AppPage } from './pages/appPage';
@@ -12,9 +12,11 @@ export let currentStyle = styleManager.style;
 export let navigationView = new NavigationView({ toolbarVisible: false, left: 0, right: 0, top: 0, bottom: 0 })
     .appendTo(contentView);
 
+SocialVk.init('7201477');
+
 contentView.background = currentStyle.colors.main;
-let loader = new ActivityIndicator({ centerX: 0, centerY: 0, width: 80, height: 80, padding: 20, tintColor: '#fff', background: currentStyle.colors.moreContrast, cornerRadius: 18 })
-    .appendTo(contentView);
+// let loader = new ActivityIndicator({ centerX: 0, centerY: 0, width: 80, height: 80, padding: 20, tintColor: '#fff', background: currentStyle.colors.moreContrast, cornerRadius: 18 })
+//     .appendTo(contentView);
 
 if (localStorage.getItem('token') && localStorage.getItem('email')) {
     rpcmp_api.users.auth({ token: localStorage.getItem('token') })
@@ -25,9 +27,12 @@ if (localStorage.getItem('token') && localStorage.getItem('email')) {
                 localStorage.setItem('name', data.user.name);
                 localStorage.setItem('certificates', data.user.certificates.join(','));
                 navigationView.append(new AppPage());
-                loader.dispose();
+                // loader.dispose();
             }
         })
-        .catch(() => navigationView.append(new LoginPage()));
+        .catch(() => {
+            navigationView.append(new LoginPage());
+            // loader.dispose();
+        });
 }
 else navigationView.append(new LoginPage());

@@ -18,6 +18,10 @@ export = new Tab({ left: 0, right: 0, top: 0, bottom: 0 })
                         map.moveToPosition(myPos, 1 * 500, { animate: true });
                         whereImButton.animate({ opacity: 0 }, { duration: 500 })
                             .then(() => whereImButton.enabled = true);
+                        map.once('cameraMoved', () => {
+                            whereImButton.animate({ opacity: 1 }, { duration: 500 })
+                                .then(() => whereImButton.enabled = true);
+                        });
                     }
                     )
                     .appendTo(tab);
@@ -33,7 +37,7 @@ export = new Tab({ left: 0, right: 0, top: 0, bottom: 0 })
                 navigator.geolocation.getCurrentPosition(pos => {
                     myPos = [pos.coords.latitude, pos.coords.longitude];
                     map.moveToPosition(myPos, 3 * 1000, { animate: false });
-                    let marker = new esmaps.Marker({ position: myPos, image: { width: 100, height: 100, src: 'https://i.imgur.com/hTfbBkS.png' } })
+                    let marker = new esmaps.Marker({ position: myPos, image: { src: '/cordova/res/icon/android/xxxhdpi.png' } })
                         .on('tap', () => new StaticVolcanoRollUp());
                     map.addMarker(marker);
                     map.once('cameraMoved', () => {
@@ -54,7 +58,7 @@ export = new Tab({ left: 0, right: 0, top: 0, bottom: 0 })
 
                                 let mapTapFunc = ({ position }: { position: Array<number> }) => {
                                     if (lastPosition.length == 0) {
-                                        let acceptButton = new ImageView({ opacity: 0, enabled: false, right: 25, bottom: 25, width: 50, height: 50, cornerRadius: 25, background: currentStyle.colors.main, elevation: 3, image: 'https://i.imgur.com/15j7lXi.png', padding: 20, tintColor: currentStyle.colors.opposite, highlightOnTouch: true })
+                                        let acceptButton = new ImageView({ opacity: 0, enabled: false, right: 25, bottom: 25, width: 50, height: 50, cornerRadius: 25, background: currentStyle.colors.main, elevation: 3, image: currentStyle.icons.check, padding: 20, tintColor: currentStyle.colors.opposite, highlightOnTouch: true })
                                             .appendTo(tab)
                                             .onTap.once(({ target: button }) => {
                                                 button.dispose();
@@ -71,7 +75,7 @@ export = new Tab({ left: 0, right: 0, top: 0, bottom: 0 })
                                     if (lastPosition != position) {
                                         lastPosition = position;
                                         if (lastMarker) map.removeMarker(lastMarker);
-                                        let marker = new esmaps.Marker({ position: position, image: { width: 100, height: 100, scale: 1, src: 'https://i.imgur.com/hTfbBkS.png' } });
+                                        let marker = new esmaps.Marker({ position: position, image: { width: 100, height: 100, scale: 1, src: currentStyle.icons.beerVolcano } });
                                         lastMarker = marker;
                                         map.addMarker(marker);
                                     }

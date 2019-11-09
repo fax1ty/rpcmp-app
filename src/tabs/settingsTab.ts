@@ -1,4 +1,4 @@
-import { Tab, Composite, TextView, Switch, app, ImageView, ScrollView } from "tabris";
+import { Tab, Composite, TextView, Switch, app, ImageView, ScrollView, device } from "tabris";
 import { currentStyle, navigationView } from "..";
 import { LoginPage } from "../pages/loginPage";
 import { RollUp } from "../libs/ui";
@@ -25,7 +25,7 @@ export = new Tab({ left: 0, right: 0, top: 0, bottom: 0 })
                             .append(
                                 new Composite()
                                     .append(
-                                        new ImageView({ image: { src: 'https://i.imgur.com/LWHMpUd.png' }, height: 15, tintColor: currentStyle.colors.opposite, centerY: 0 }),
+                                        new ImageView({ image: { src: currentStyle.icons.key }, height: 15, tintColor: currentStyle.colors.opposite, centerY: 0 }),
                                         new TextView({ text: 'Изменить данные', textColor: currentStyle.colors.opposite, left: 'prev() 10', font: 'bold 14px' })
                                     )
                                     .onTap(() => {
@@ -33,7 +33,7 @@ export = new Tab({ left: 0, right: 0, top: 0, bottom: 0 })
                                     }),
                                 new Composite({ left: 'prev() 25' })
                                     .append(
-                                        new ImageView({ image: { src: 'https://i.imgur.com/EwUekku.png' }, height: 15, tintColor: currentStyle.colors.opposite, centerY: 0 }),
+                                        new ImageView({ image: { src: currentStyle.icons.exit }, height: 15, tintColor: currentStyle.colors.opposite, centerY: 0 }),
                                         new TextView({ text: 'Выйти из аккаунта', textColor: currentStyle.colors.opposite, left: 'prev() 10', font: 'bold 14px' })
                                     )
                                     .onTap.once(() => {
@@ -64,5 +64,18 @@ export = new Tab({ left: 0, right: 0, top: 0, bottom: 0 })
                     .append(
                         new TextView({ text: 'Лицензии FOSS', textColor: '#fff', left: 0, right: 0, alignment: 'centerX' })
                     )
+                    .onTap(() => new RollUp({ title: 'Юридеческая ересь', colors: { background: currentStyle.colors.main, title: currentStyle.colors.opposite } })
+                        .append(
+                            new ScrollView({ left: 0, right: 0, top: 0, bottom: 0, scrollbarVisible: false, height: device.screenHeight * 0.75 })
+                                .append(
+                                    new TextView({ text: 'FlatIcon', textColor: currentStyle.colors.opposite, font: 'bold 18px', left: 25, right: 25 }),
+                                    new TextView({ markupEnabled: true, top: 'prev() 5', text: generateFlatIcon(['Smashicons', 'Freepik', 'srip', 'photo3idea_studio', 'Dave Gandy', 'Pixel perfect']), textColor: currentStyle.colors.opposite, left: 25, right: 25 })
+                                        .onTapLink(({ url }) => app.launch(url)),
+                                )
+                        ))
             );
     });
+
+function generateFlatIcon(authors: Array<string>) {
+    return authors.map(a => `Icon made by <a href="https://www.flaticon.com/authors/${a.toLowerCase().replace(/_/g, '-').replace(/ /g, '-')}">${a}</a> from <a href="https://www.flaticon.com/">www.flaticon.com</a>`).join('<br/>')
+}

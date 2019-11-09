@@ -48,7 +48,7 @@ function call<T>(action: string, data: any) {
 
 export = {
     users: {
-        auth: (values: { id?: string; token?: string; password?: string; social?: { github?: { code: string; } } }) => call<AuthResponseData>('users.auth', values),
+        auth: (values: { id?: string; token?: string; password?: string; social?: { github?: { code: string; }; vk?: { token: string; } } }) => call<AuthResponseData>('users.auth', values),
         addCertificate: (values: { id: Certificates }) => call<AddCertificateResponseData>('users.addCertificate', values),
         setProfileData: (values: { name?: User['name'], email?: User['email'], password?: string, token: User['token'] }) => call<SetProfileDataResponseData>('users.setProfileData', values)
     }
