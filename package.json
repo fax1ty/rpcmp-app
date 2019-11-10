@@ -9,9 +9,11 @@
     "start": "tabris serve -a -w"
   },
   "dependencies": {
+    "moment": "^2.24.0",
     "tabris": "~3.2.1"
   },
   "devDependencies": {
+    "@types/moment": "^2.13.0",
     "tslint": "^5.20.0",
     "typescript": "~3.3.4000"
   }

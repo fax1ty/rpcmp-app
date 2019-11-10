@@ -31,6 +31,24 @@ interface SetProfileDataResponseData {
     editedCount: number;
 }
 
+interface AddPointResponseData {
+    editedCount: number;
+}
+
+interface ReverseGeocodeResponseData {
+    house_number: string;
+    city: string;
+    cafe: string;
+    road: string;
+    suburb: string;
+    county: string;
+    region: string;
+    state: string;
+    postcode: string;
+    country: string;
+    country_code: string;
+}
+
 let GATEWAY = 'http://85.113.37.241:8000/api/v1';
 
 function call<T>(action: string, data: any) {
@@ -48,8 +66,14 @@ function call<T>(action: string, data: any) {
 
 export = {
     users: {
-        auth: (values: { id?: string; token?: string; password?: string; social?: { github?: { code: string; }; vk?: { token: string; } } }) => call<AuthResponseData>('users.auth', values),
-        addCertificate: (values: { id: Certificates }) => call<AddCertificateResponseData>('users.addCertificate', values),
-        setProfileData: (values: { name?: User['name'], email?: User['email'], password?: string, token: User['token'] }) => call<SetProfileDataResponseData>('users.setProfileData', values)
+        auth: (values: { id?: string; token?: string; password?: string; social?: { github?: { code: string; }; vk?: { token: string; }, google?: { token: string; } } }) => call<AuthResponseData>('users.auth', values),
+        addCertificate: (values: { id: Certificates }) => call<AddCertificateResponseData>('users.addCertificate', Object.assign(values, { token: localStorage.getItem('token') })),
+        setProfileData: (values: { name?: User['name']; email?: User['email']; password?: string; token: User['token'] }) => call<SetProfileDataResponseData>('users.setProfileData', values)
+    },
+    map: {
+        addPoint: (values: {}) => call<AddPointResponseData>('map.addPoint', values)
+    },
+    utils: {
+        reverseGeocode: (values: { point: Array<number>; }) => call<ReverseGeocodeResponseData>('utils.reverseGeocode', Object.assign(values, { token: localStorage.getItem('token') }))
     }
 }

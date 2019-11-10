@@ -353,22 +353,23 @@ export class PopUp extends Composite {
             .then(() => this.dispose());
     }
 
-    constructor(values: { title: string, text: string, buttons?: { ok?: { color?: ColorValue, text: string, action: () => any }, no?: { color?: ColorValue, text: string, action: () => any } } }, properties?: Properties<Composite>) {
-        super();
+    constructor(values: { textColor?: ColorValue, title: string, text: string, buttons?: { ok?: { color?: ColorValue, text: string, action: () => any }, no?: { color?: ColorValue, text: string, action: () => any } } }, properties?: Properties<Composite>) {
+        super(properties);
+
+        if (!values.textColor) values.textColor = '#000';
 
         this.cornerRadius = 18;
         this.left = 25;
         this.right = 25;
         this.centerY = 0;
         this.padding = 25;
-        this.elevation = 3;
         this.opacity = 0;
 
         if (!properties) this.background = '#fff';
 
         this.append(
-            new TextView({ text: values.title, left: 0, right: 0, font: 'bold 18px' }),
-            new TextView({ text: values.text, left: 0, right: 0, top: 'prev() 10' })
+            new TextView({ text: values.title, textColor: values.textColor, left: 0, right: 0, font: 'bold 18px' }),
+            new TextView({ text: values.text, textColor: values.textColor, left: 0, right: 0, top: 'prev() 10' })
         );
 
         if (values.buttons) {
@@ -376,13 +377,13 @@ export class PopUp extends Composite {
                 .appendTo(this);
             if (values.buttons.ok) {
                 let okButton = new TextView({ text: values.buttons.ok.text, font: 'bold 16px', right: 0 })
-                    .onTap(values.buttons.ok.action)
+                    .onTap.once(() => { values.buttons.ok.action ? values.buttons.ok.action() : () => { }; this.close(); })
                     .appendTo(buttons);
                 if (values.buttons.ok.color) okButton.textColor = values.buttons.ok.color;
             }
             if (values.buttons.no) {
                 let noButton = new TextView({ text: values.buttons.no.text, font: 'bold 16px' })
-                    .onTap(values.buttons.no.action)
+                    .onTap.once(() => { values.buttons.no.action ? values.buttons.no.action() : () => { }; this.close(); })
                     .appendTo(buttons);
                 if (values.buttons.no.color) noButton.textColor = values.buttons.no.color;
                 if (values.buttons.ok) noButton.right = 'prev() 25';

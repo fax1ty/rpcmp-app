@@ -51,7 +51,7 @@ export class StaticVolcanoRollUp extends RollUp {
                     ),
                 new Composite({ left: 25, right: 25, top: 'prev() 25', opacity: 0.75 })
                     .append(
-                        new ImageView({ image: 'https://i.imgur.com/dh9BimY.png', tintColor: currentStyle.colors.opposite, height: 15 }),
+                        new ImageView({ image: currentStyle.icons.volcano, tintColor: currentStyle.colors.opposite, height: 15 }),
                         new TextView({ left: 'prev() 15', text: 'Вулкан', textColor: currentStyle.colors.opposite, centerY: 0 })
                     ),
                 new TextView({ textColor: currentStyle.colors.opposite, top: 'prev() 25', left: 25, right: 25, text: 'Равным образом постоянный количественный рост и сфера нашей активности позволяет выполнять важные задания по разработке направлений прогрессивного развития. Товарищи!' }),
@@ -76,6 +76,10 @@ interface Style {
         blackToTransparent: string;
     }
     icons: {
+        lightBulb: string;
+        compass: string;
+        time: string;
+        volcano: string;
         menu: {
             feed: string;
             map: string;
@@ -110,6 +114,10 @@ export class StyleManager {
             blackToTransparent: 'linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 100%)'
         },
         icons: {
+            lightBulb: 'https://github.com/greaterweb/emoji-highres/blob/master/160x160/1f4a1.png?raw=true',
+            compass: 'https://i.imgur.com/zVtc0rS.png',
+            time: 'https://i.imgur.com/gvBy1u1.png',
+            volcano: 'https://i.imgur.com/dh9BimY.png',
             menu: {
                 feed: 'https://i.imgur.com/BXrRwj6.png', // моя иконка
                 map: 'https://i.imgur.com/F1Ejxxh.png',// https://www.flaticon.com/free-icon/star_149763
@@ -142,6 +150,10 @@ export class StyleManager {
             blackToTransparent: 'linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 100%)'
         },
         icons: {
+            lightBulb: 'https://github.com/greaterweb/emoji-highres/blob/master/160x160/1f4a1.png?raw=true',
+            compass: 'https://i.imgur.com/zVtc0rS.png',
+            time: 'https://i.imgur.com/gvBy1u1.png',
+            volcano: 'https://i.imgur.com/dh9BimY.png',
             menu: {
                 feed: 'https://i.imgur.com/BXrRwj6.png', // моя иконка
                 map: 'https://i.imgur.com/F1Ejxxh.png', // https://www.flaticon.com/free-icon/star_149763
