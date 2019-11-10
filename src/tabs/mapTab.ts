@@ -146,7 +146,9 @@ export = new Tab({ left: 0, right: 0, top: 0, bottom: 0 })
                                                                                         new ImageView({ centerX: 0, centerY: 0, width: 15, image: currentStyle.icons.plus, tintColor: currentStyle.colors.opposite })
                                                                                     )
                                                                                     .onTap(() => {
-
+                                                                                        let imagesScroll = new ScrollView({ left: 0, right: 0, height: device.screenHeight * 0.75 });
+                                                                                        new RollUp({ title: 'Выбор фотографии', colors: { background: currentStyle.colors.main, title: currentStyle.colors.opposite } })
+                                                                                            .append(imagesScroll);
                                                                                     }),
                                                                                 new Composite({ left: 'prev() 25', height: 80, width: 80, background: currentStyle.colors.contrast, cornerRadius: 18, highlightOnTouch: true })
                                                                                     .append(
