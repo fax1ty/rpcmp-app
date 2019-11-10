@@ -15,7 +15,7 @@
   <plugin name="cordova-plugin-native-geolocation" spec="https://github.com/fax1ty/cordova-plugin-native-geolocation.git" />
   <!-- <plugin name="tabris-plugin-firebase" spec="https://github.com/eclipsesource/tabris-plugin-firebase.git" /> -->
   <plugin name="cordova-plugin-datepicker" spec="https://github.com/eclipsesource/cordova-plugin-datepicker.git" />
-  <plugin name="cordova-gallery-api" spec="https://github.com/subitolabs/cordova-gallery-api.git" />
+  <plugin name="cordova-gallery-api" spec="https://github.com/Collaborne/cordova-gallery-api.git" />
 
   <!-- Соц.вход -->
   <plugin name="cordova-vk-auth" spec="https://github.com/iRapoo/cordova-vk-auth.git">

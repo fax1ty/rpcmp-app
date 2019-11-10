@@ -149,6 +149,13 @@ export = new Tab({ left: 0, right: 0, top: 0, bottom: 0 })
                                                                                         let imagesScroll = new ScrollView({ left: 0, right: 0, height: device.screenHeight * 0.75 });
                                                                                         new RollUp({ title: 'Выбор фотографии', colors: { background: currentStyle.colors.main, title: currentStyle.colors.opposite } })
                                                                                             .append(imagesScroll);
+
+                                                                                        let x = galleryAPI.getAlbums().map(album => {
+                                                                                            let data: Array<GalleryItem>;
+                                                                                            galleryAPI.getMedia(album, images => data = images);
+                                                                                            return data;
+                                                                                        })
+                                                                                        console.log(x);
                                                                                     }),
                                                                                 new Composite({ left: 'prev() 25', height: 80, width: 80, background: currentStyle.colors.contrast, cornerRadius: 18, highlightOnTouch: true })
                                                                                     .append(
