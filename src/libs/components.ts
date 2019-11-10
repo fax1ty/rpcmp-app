@@ -76,6 +76,7 @@ interface Style {
         blackToTransparent: string;
     }
     icons: {
+        close: string;
         lightBulb: string;
         compass: string;
         time: string;
@@ -114,6 +115,7 @@ export class StyleManager {
             blackToTransparent: 'linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 100%)'
         },
         icons: {
+            close: 'https://i.imgur.com/Wj00f51.png',
             lightBulb: 'https://github.com/greaterweb/emoji-highres/blob/master/160x160/1f4a1.png?raw=true',
             compass: 'https://i.imgur.com/zVtc0rS.png',
             time: 'https://i.imgur.com/gvBy1u1.png',
@@ -150,6 +152,7 @@ export class StyleManager {
             blackToTransparent: 'linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 100%)'
         },
         icons: {
+            close: 'https://i.imgur.com/Wj00f51.png',
             lightBulb: 'https://github.com/greaterweb/emoji-highres/blob/master/160x160/1f4a1.png?raw=true',
             compass: 'https://i.imgur.com/zVtc0rS.png',
             time: 'https://i.imgur.com/gvBy1u1.png',

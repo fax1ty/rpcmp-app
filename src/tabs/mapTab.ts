@@ -51,13 +51,28 @@ export = new Tab({ left: 0, right: 0, top: 0, bottom: 0 })
                     .insertBefore(loader)
                     .onTap(({ target: button }) => {
                         button.enabled = false;
-                        button.animate({ opacity: 0 }, { duration: 500, easing: 'ease-out' })
+                        button.animate({ opacity: 0 }, { duration: 500 })
                             .then(() => {
                                 let lastPosition = new Array<number>();
                                 let lastMarker: TabrisMarker;
 
+                                new ImageView({ id: 'cancel-button', elevation: 3, right: 25, bottom: 25, width: 50, height: 50, cornerRadius: 25, background: currentStyle.colors.moreContrast, image: currentStyle.icons.close, padding: 20, tintColor: '#fff', highlightOnTouch: true })
+                                    .onTap.once(({ target: cancelButton }) => {
+                                        map.off('tap', mapTapFunc);
+                                        cancelButton.animate({ opacity: 0 }, { duration: 500 })
+                                            .then(() => {
+                                                cancelButton.dispose();
+                                                $('#pick-place-header').first().dispose();
+                                                button.enabled = true;
+                                                button.animate({ opacity: 1 }, { duration: 500 });
+                                            });
+
+                                    })
+                                    .appendTo(tab);
+
                                 let mapTapFunc = ({ position }: { position: Array<number> }) => {
                                     if (lastPosition.length == 0) {
+                                        $('#cancel-button').first().dispose();
                                         let acceptButton = new ImageView({ opacity: 0, enabled: false, right: 25, bottom: 25, width: 50, height: 50, cornerRadius: 25, background: currentStyle.colors.main, elevation: 3, image: currentStyle.icons.check, padding: 20, tintColor: currentStyle.colors.opposite, highlightOnTouch: true })
                                             .appendTo(tab)
                                             .onTap(({ target: button }) => {
@@ -68,7 +83,7 @@ export = new Tab({ left: 0, right: 0, top: 0, bottom: 0 })
                                                         button.dispose();
                                                         $('#pick-place-header').dispose();
                                                         map.off('tap', mapTapFunc);
-                                                        newVolcanoButton.animate({ opacity: 1 }, { duration: 500, delay: 1000, easing: 'ease-out' })
+                                                        newVolcanoButton.animate({ opacity: 1 }, { duration: 500, delay: 1000 })
                                                             .then(() => newVolcanoButton.enabled = true);
 
                                                         let placeTitleInput = new TextInput({ id: 'place-title-input', textColor: currentStyle.colors.opposite, message: 'Отображаемое название', messageColor: currentStyle.colors.opposite, floatMessage: false, left: 0, right: 0, style: 'none', centerY: 0, keyboardAppearanceMode: 'ontouch' });
@@ -79,9 +94,10 @@ export = new Tab({ left: 0, right: 0, top: 0, bottom: 0 })
                                                         let counter = new TextView({ text: `${placeTextInput.text.length}/${placeTextInput.maxChars}`, textColor: currentStyle.colors.opposite, top: 'prev() 15', right: 25 });
 
                                                         let isNeedToSave = false;
+                                                        let date = new Date();
 
                                                         placeAddressInput.text = posAddress;
-                                                        placeDateInput.text = `${moment(Date.now()).format('DD.MM.YYYY - HH:MM (UTC ZZ)')}`;
+                                                        placeDateInput.text = `${moment(date).format('DD.MM.YYYY - HH:MM (UTC ZZ)')}`;
 
                                                         let rollUp = new RollUp({ title: 'Новая метка', colors: { background: currentStyle.colors.main, title: currentStyle.colors.opposite } })
                                                             .append(
@@ -104,7 +120,7 @@ export = new Tab({ left: 0, right: 0, top: 0, bottom: 0 })
                                                                                         rpcmp_api.utils.reverseGeocode({ point: myPos })
                                                                                             .then(myPosData => {
                                                                                                 placeAddressInput.text = `${myPosData.country}, ${myPosData.city}${myPosData.road ? `, ${myPosData.road}` : ''}${myPosData.house_number ? `, ${myPosData.house_number}` : ''}`;
-                                                                                                new Notification({ image: currentStyle.icons.lightBulb, colors: { background: currentStyle.colors.main, text: currentStyle.colors.opposite }, title: 'Сообщение', text: 'Адрес был автоматически определён по Вашему местоположению' });
+                                                                                                new Notification({ image: currentStyle.icons.lightBulb, colors: { background: currentStyle.colors.main, text: currentStyle.colors.opposite }, closeCondition: { autoDuration: 3 * 1000 }, title: 'Сообщение', text: 'Адрес был автоматически определён по Вашему местоположению' });
                                                                                             })
                                                                                             .catch(err => {
                                                                                                 console.error(err);
@@ -116,6 +132,12 @@ export = new Tab({ left: 0, right: 0, top: 0, bottom: 0 })
                                                                             .append(
                                                                                 placeDateInput,
                                                                                 new ImageView({ right: 15, image: currentStyle.icons.time, tintColor: '#fff', padding: 10, background: currentStyle.colors.moreContrast, cornerRadius: 30 / 4, highlightOnTouch: true, width: 30, height: 30, centerY: 0 })
+                                                                                    .onTap(() => {
+                                                                                        datePicker.show({ mode: 'datetime', date: date, androidTheme: currentStyle.isLightStatusBar ? 0 : 4, doneButtonColor: currentStyle.colors.contrast, cancelButtonColor: currentStyle.colors.contrast, allowOldDates: false, is24Hour: true, minDate: date }, data => {
+                                                                                            date = new Date(data);
+                                                                                            placeDateInput.text = `${moment(date).format('DD.MM.YYYY - HH:MM (UTC ZZ)')}`;
+                                                                                        }, err => console.error(err));
+                                                                                    })
                                                                             ),
                                                                         new ScrollView({ left: 25, right: 25, top: 'prev() 25', direction: 'horizontal', scrollbarVisible: false })
                                                                             .append(
@@ -166,7 +188,7 @@ export = new Tab({ left: 0, right: 0, top: 0, bottom: 0 })
                                                     })
                                                     .catch(err => console.error(err));
                                             });
-                                        acceptButton.animate({ opacity: 1 }, { easing: 'ease-out' })
+                                        acceptButton.animate({ opacity: 1 }, { duration: 500 })
                                             .then(() => acceptButton.enabled = true);
                                     }
 
