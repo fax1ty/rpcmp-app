@@ -1,8 +1,8 @@
-import { Page, TabFolder, statusBar } from "tabris";
-import { BottomMenu } from "../libs/components";
-import mapTab = require("../tabs/mapTab");
-import feedTab = require("../tabs/feedTab");
-import settingsTab = require("../tabs/settingsTab");
+import { Page, TabFolder, statusBar } from 'tabris';
+import { BottomMenu } from '../libs/components';
+import mapTab = require('../tabs/mapTab');
+import feedTab = require('../tabs/feedTab');
+import settingsTab = require('../tabs/settingsTab');
 import { currentStyle } from '..';
 
 export class AppPage extends Page {

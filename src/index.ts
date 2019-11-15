@@ -22,6 +22,7 @@ if (localStorage.getItem('token') && localStorage.getItem('email')) {
     rpcmp_api.users.auth({ token: localStorage.getItem('token') })
         .then(data => {
             if (data.type == 'login') {
+                localStorage.setItem('id', data.user.id.toString());
                 localStorage.setItem('email', data.user.email);
                 localStorage.setItem('token', data.user.token);
                 localStorage.setItem('name', data.user.name);

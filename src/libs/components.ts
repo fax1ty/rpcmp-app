@@ -1,6 +1,9 @@
-import { Composite, TabFolder, ImageView, ScrollView, TextView, ImageValue, Properties, device } from "tabris";
-import { currentStyle } from "..";
-import { RollUp } from "./ui";
+import { Composite, TabFolder, ImageView, ScrollView, TextView, ImageValue, Properties, device, CollectionView } from 'tabris';
+import { currentStyle } from '..';
+import { RollUp, PopUp } from './ui';
+import { MapPoint } from './interfaces';
+import moment = require('moment');
+import rpcmp_api = require('./rpcmp_api');
 
 export class BottomMenu extends Composite {
     constructor(tabFolder: TabFolder) {
@@ -37,29 +40,66 @@ export class BottomMenu extends Composite {
 }
 
 export class StaticVolcanoRollUp extends RollUp {
-    constructor() {
-        super({ title: 'Локи бар', colors: { background: currentStyle.colors.main, title: currentStyle.colors.opposite } });
+    constructor(point: MapPoint, marker: TabrisMarker) {
+        super({ title: point.place.title, colors: { background: currentStyle.colors.main, title: currentStyle.colors.opposite } });
 
+        let imageScroll = new ScrollView({ left: 25, right: 25, height: 150, direction: 'horizontal', scrollbarVisible: false });
+        point.place.photos.forEach((url, i) => {
+            new ImageView({ top: 0, bottom: 0, left: i == 0 ? 0 : 'prev() 25', image: url })
+                .appendTo(imageScroll)
+        });
+        let notOwnerButton = new Composite({ padding: 15, highlightOnTouch: true, top: 'prev() 25', left: 25, right: 25, cornerRadius: 18, elevation: 3, background: currentStyle.colors.contrast })
+            .append(
+                new TextView({ alignment: 'centerX', textColor: currentStyle.colors.opposite, left: 0, right: 0, text: 'Святые приправы, я в деле!' }),
+            );
+        let ownerButton = new Composite({ padding: 15, highlightOnTouch: true, top: 'prev() 25', left: 25, right: 25, cornerRadius: 18, elevation: 3, background: currentStyle.colors.contrast })
+            .append(
+                new TextView({ alignment: 'centerX', textColor: currentStyle.colors.opposite, left: 0, right: 0, text: 'Сетерь с лица земли' }),
+            )
+            .onTap(() => {
+                new PopUp({
+                    textColor: currentStyle.colors.opposite, title: 'Вы в этом уверены?', text: 'Вы удалите данное мероприятие целиком и полностью. Оно больше не будет отображаться в списке, все подписавшиеся будут удалены и уведомлены об этом действии', buttons: {
+                        no: {
+                            color: currentStyle.colors.opposite,
+                            text: 'О, боги, нет',
+                            action: () => { }
+                        },
+                        ok: {
+                            color: 'red',
+                            text: 'Гори синим пламенем!', action: () => {
+                                rpcmp_api.map.removePoint({ id: point.id })
+                                    .then(() => {
+                                        marker.dispose();
+                                        this.close();
+                                    })
+                                    .catch(err => console.error(err))
+                            }
+                        }
+                    }
+                }, { background: currentStyle.colors.main })
+            });
         this
             .append(
-                new ScrollView({ left: 25, right: 25, height: 150, direction: 'horizontal', scrollbarVisible: false })
-                    .append(
-                        new ImageView({ top: 0, bottom: 0, image: 'https://sun9-10.userapi.com/c844216/v844216100/160ba1/T545u7SGq2E.jpg' }),
-                        new ImageView({ top: 0, bottom: 0, left: 'prev() 25', image: 'https://sun9-4.userapi.com/c857432/v857432022/59320/83Mdhn5PS9Q.jpg' }),
-                        new ImageView({ top: 0, bottom: 0, left: 'prev() 25', image: 'https://sun9-13.userapi.com/c857432/v857432022/59280/F_VRg5i1GXM.jpg' }),
-                        new ImageView({ top: 0, bottom: 0, left: 'prev() 25', image: 'https://sun9-72.userapi.com/c857432/v857432022/59370/Z27r940pwqE.jpg' })
-                    ),
+                imageScroll,
                 new Composite({ left: 25, right: 25, top: 'prev() 25', opacity: 0.75 })
                     .append(
                         new ImageView({ image: currentStyle.icons.volcano, tintColor: currentStyle.colors.opposite, height: 15 }),
                         new TextView({ left: 'prev() 15', text: 'Вулкан', textColor: currentStyle.colors.opposite, centerY: 0 })
                     ),
-                new TextView({ textColor: currentStyle.colors.opposite, top: 'prev() 25', left: 25, right: 25, text: 'Равным образом постоянный количественный рост и сфера нашей активности позволяет выполнять важные задания по разработке направлений прогрессивного развития. Товарищи!' }),
-                new Composite({ padding: 15, highlightOnTouch: true, top: 'prev() 25', left: 25, right: 25, cornerRadius: 18, elevation: 3, background: currentStyle.colors.contrast })
+                new TextView({ textColor: currentStyle.colors.opposite, top: 'prev() 25', left: 25, right: 25, text: point.place.text }),
+                new Composite({ top: 'prev() 25', left: 25, right: 25 })
                     .append(
-                        new TextView({ alignment: 'centerX', textColor: currentStyle.colors.opposite, left: 0, right: 0, text: 'Святые приправы, я в деле!' }),
+                        new ImageView({ image: currentStyle.icons.compass, tintColor: currentStyle.colors.opposite, height: 15 }),
+                        new TextView({ centerY: 0, textColor: currentStyle.colors.opposite, left: 'prev() 15', right: 0, text: point.place.address }),
                     ),
-                new TextView({ textColor: currentStyle.colors.opposite, left: 0, right: 0, alignment: 'centerX', top: 'prev() 15', text: 'О мои фрикадели, с нами уже X человек', opacity: 0.7 })
+                new Composite({ top: 'prev() 15', left: 25, right: 25 })
+                    .append(
+                        new ImageView({ image: currentStyle.icons.time, tintColor: currentStyle.colors.opposite, height: 15 }),
+                        new TextView({ centerY: 0, textColor: currentStyle.colors.opposite, left: 'prev() 15', right: 0, text: `${moment(point.date).format('DD.MM.YYYY - HH:MM (UTC ZZ)')}` }),
+                    ),
+                // Я в деле!
+                point.owner == parseInt(localStorage.getItem('id')) ? ownerButton : notOwnerButton,
+                new TextView({ top: 'prev() 25', opacity: 0.75, alignment: 'centerX', textColor: currentStyle.colors.opposite, left: 25, right: 25, text: `О мои фрикадели, с нами уже ${point.followers.length} человек(а)` }),
             )
     }
 }
@@ -76,6 +116,7 @@ interface Style {
         blackToTransparent: string;
     }
     icons: {
+        block: string;
         close: string;
         lightBulb: string;
         compass: string;
@@ -115,6 +156,7 @@ export class StyleManager {
             blackToTransparent: 'linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 100%)'
         },
         icons: {
+            block: 'https://i.imgur.com/i1qQL0e.png',
             close: 'https://i.imgur.com/Wj00f51.png',
             lightBulb: 'https://github.com/greaterweb/emoji-highres/blob/master/160x160/1f4a1.png?raw=true',
             compass: 'https://i.imgur.com/zVtc0rS.png',
@@ -152,6 +194,7 @@ export class StyleManager {
             blackToTransparent: 'linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 100%)'
         },
         icons: {
+            block: 'https://i.imgur.com/i1qQL0e.png',
             close: 'https://i.imgur.com/Wj00f51.png',
             lightBulb: 'https://github.com/greaterweb/emoji-highres/blob/master/160x160/1f4a1.png?raw=true',
             compass: 'https://i.imgur.com/zVtc0rS.png',
@@ -250,5 +293,96 @@ export class FeedPost extends Composite {
                     }
                 });
         }
+    }
+}
+
+export class GalleryPicker extends Composite {
+    pickedPhoto = '';
+    thumbnail = '';
+    private preview = new ImageView({ left: 0, right: 0, top: 0, bottom: 0, scaleMode: 'fill' });
+    private actionIcon = new ImageView({ centerX: 0, centerY: 0, width: 15, image: currentStyle.icons.plus, tintColor: currentStyle.colors.opposite });
+    private actionForeground =
+        new Composite({ background: currentStyle.gradients.blackToTransparent, left: 0, right: 0, top: 0, bottom: 0 })
+            .append(this.actionIcon);
+
+    private _isActive: boolean;
+    public get isActive(): boolean {
+        return this._isActive;
+    }
+    public set isActive(value: boolean) {
+        this._isActive = value;
+        if (value) { this.onTap.once(this.tapListener); this.actionIcon.image = currentStyle.icons.plus; }
+        else { this.onTap.removeListener(this.tapListener); this.actionIcon.image = currentStyle.icons.block; }
+    }
+
+    onPick = (cb: (data: { photo: string; thumbnail: string; }) => void) => this.on('pick', cb as any);
+    onDepick = (cb: () => void) => this.on('depick', cb as any);
+
+    private tapListener = () => {
+        let photoAlbums = new Array<Array<GalleryItem>>();
+
+        galleryAPI.getAlbums(albums => {
+            albums.forEach((album, i, arr) => {
+                galleryAPI.getMedia(album, async images => {
+                    await photoAlbums.push(images);
+                    if (i == arr.length - 1) {
+                        let photos = photoAlbums.reduce((a, b) => b.concat(a)).sort((a, b) => b.date_added - a.date_added);
+
+                        let TILE_OFFSET = 15;
+                        let COLUMNT_COUNT = 4;
+                        let PADDING = 25;
+                        let TILE_DIM = ((device.screenWidth - (PADDING * 2)) - TILE_OFFSET * (COLUMNT_COUNT - 1)) / COLUMNT_COUNT;
+
+                        let rollUp = new RollUp({ title: 'Выбор фотографии', colors: { background: currentStyle.colors.main, title: currentStyle.colors.opposite } });
+
+                        new CollectionView({
+                            left: PADDING, right: PADDING, height: device.screenHeight * 0.5, scrollbarVisible: false,
+                            itemCount: Math.ceil(photos.length / 4),
+                            createCell: () => {
+                                let row = new Composite();
+                                for (let i = 0; i < 4; i++) new ImageView({ background: currentStyle.colors.contrast, width: TILE_DIM, height: TILE_DIM, scaleMode: 'fill', cornerRadius: 18, left: i == 0 ? 0 : `prev() ${TILE_OFFSET}` })
+                                    .appendTo(row);
+                                return row;
+                            },
+                            updateCell: (cell, x) => {
+                                if (x == 0) cell.padding = 0;
+                                else cell.padding = { top: 25 }
+
+                                cell.find(ImageView).forEach((view, y) => {
+                                    if ((4 * x) + y < photos.length) {
+                                        galleryAPI.getMediaThumbnail(photos[(4 * x) + y], thumb => {
+                                            view.image = `file://${thumb.thumbnail}`;
+                                            view.onTap.once(() => {
+                                                this.pickedPhoto = `file://${photos[(4 * x) + y].data}`;
+                                                this.thumbnail = `file://${thumb.thumbnail}`;
+                                                this.preview.image = this.thumbnail;
+                                                this.actionIcon.image = currentStyle.icons.close;
+                                                this.actionForeground.onTap.once(() => { this.thumbnail = ''; this.pickedPhoto = ''; this.preview.image = null; this.onTap.once(this.tapListener); this.actionIcon.image = currentStyle.icons.plus; this.trigger('depick'); })
+                                                this.trigger('pick', { photo: this.pickedPhoto, thumbnail: this.thumbnail });
+                                                rollUp.close();
+                                            });
+                                        }, err => console.error(err));
+                                    }
+                                });
+                            }
+                        })
+                            .appendTo(rollUp);
+                    }
+                })
+            })
+        });
+    }
+
+    constructor(values?: { isActive: boolean; }, properties?: Properties<Composite>) {
+        super(Object.assign({ height: 80, width: 80, background: currentStyle.colors.contrast, cornerRadius: 18, highlightOnTouch: true }, properties));
+
+        if (values) this.isActive = values.isActive;
+        else this.isActive = true;
+
+        this
+            .append(
+                this.preview,
+                this.actionForeground
+            );
     }
 }

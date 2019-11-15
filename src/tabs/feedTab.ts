@@ -1,7 +1,7 @@
-import { Tab, TextView, ScrollView, app, WebView, device, Composite } from "tabris";
-import { currentStyle } from "..";
-import { RollUp } from "../libs/ui";
-import { FeedStory, FeedPost } from "../libs/components";
+import { Tab, TextView, ScrollView, app, WebView, device, Composite } from 'tabris';
+import { currentStyle } from '..';
+import { RollUp } from '../libs/ui';
+import { FeedStory, FeedPost } from '../libs/components';
 
 export = new Tab({ left: 0, right: 0, top: 0, bottom: 0 })
     .onAppear.once(({ target: tab }) => {

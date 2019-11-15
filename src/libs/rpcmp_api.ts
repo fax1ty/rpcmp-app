@@ -1,53 +1,4 @@
-interface APIResponse {
-    data?: any;
-    error?: {
-        code: number;
-        message: string;
-    }
-}
-
-enum Certificates {
-    MAIN = 1
-}
-
-interface User {
-    token: string;
-    certificates: Array<Certificates>;
-    name: string;
-    email: string;
-}
-
-interface AuthResponseData {
-    user: User
-    reference: 'socials' | 'rpcmp'
-    type: 'login' | 'register'
-}
-
-interface AddCertificateResponseData {
-    editedCount: number;
-}
-
-interface SetProfileDataResponseData {
-    editedCount: number;
-}
-
-interface AddPointResponseData {
-    editedCount: number;
-}
-
-interface ReverseGeocodeResponseData {
-    house_number: string;
-    city: string;
-    cafe: string;
-    road: string;
-    suburb: string;
-    county: string;
-    region: string;
-    state: string;
-    postcode: string;
-    country: string;
-    country_code: string;
-}
+import { Certificates, AddCertificateResponseData, User, MapPoint, PointPlace, RemovePointResponseData, GetPointDataResponseData, FollowPlaceResponseData, UnfollowPlaceResponseData, ReverseGeocodeResponseData, APIResponse, SetProfileDataResponseData, AddPointResponseData, AuthResponseData, GetPointsResponseData, GetAllActivePointsResponseData } from './interfaces';
 
 let GATEWAY = 'http://85.113.37.241:8000/api/v1';
 
@@ -66,14 +17,23 @@ function call<T>(action: string, data: any) {
 
 export = {
     users: {
-        auth: (values: { id?: string; token?: string; password?: string; social?: { github?: { code: string; }; vk?: { token: string; }, google?: { token: string; } } }) => call<AuthResponseData>('users.auth', values),
+        auth: (values: { email?: string; token?: string; password?: string; social?: { github?: { code: string; }; vk?: { token: string; }, google?: { token: string; } } }) => call<AuthResponseData>('users.auth', values),
         addCertificate: (values: { id: Certificates }) => call<AddCertificateResponseData>('users.addCertificate', Object.assign(values, { token: localStorage.getItem('token') })),
-        setProfileData: (values: { name?: User['name']; email?: User['email']; password?: string; token: User['token'] }) => call<SetProfileDataResponseData>('users.setProfileData', values)
+        setProfileData: (values: { name?: User['name']; email?: User['email']; password?: string; token: User['token'] }) => call<SetProfileDataResponseData>('users.setProfileData', values),
+        getPoints: (values?: { owner?: User['id'], filter?: 'active' | 'past' }) => call<GetPointsResponseData>('users.getPoints', Object.assign(values, { token: localStorage.getItem('token') }))
     },
     map: {
-        addPoint: (values: {}) => call<AddPointResponseData>('map.addPoint', values)
+        addPoint: (values: { type: 'volcano', place: PointPlace, position: MapPoint['position'], date: MapPoint['date'] }) => call<AddPointResponseData>('map.addPoint', Object.assign(values, { token: localStorage.getItem('token') })),
+        removePoint: (values: { id: MapPoint['id']; }) => call<RemovePointResponseData>('map.removePoint', Object.assign(values, { token: localStorage.getItem('token') })),
+        getPointData: (values: { id: MapPoint['id']; }) => call<GetPointDataResponseData>('map.getPointData', Object.assign(values, { token: localStorage.getItem('token') })),
+        followPlace: (values: { id: MapPoint['id']; }) => call<FollowPlaceResponseData>('map.followPlace', Object.assign(values, { token: localStorage.getItem('token') })),
+        unfollowPlace: (values: { id: MapPoint['id']; }) => call<UnfollowPlaceResponseData>('map.unfollowPlace', Object.assign(values, { token: localStorage.getItem('token') })),
+        getAllActivePoints: () => call<GetAllActivePointsResponseData>('map.getAllActivePoints', { token: localStorage.getItem('token') })
     },
     utils: {
         reverseGeocode: (values: { point: Array<number>; }) => call<ReverseGeocodeResponseData>('utils.reverseGeocode', Object.assign(values, { token: localStorage.getItem('token') }))
+    },
+    feed: {
+
     }
 }

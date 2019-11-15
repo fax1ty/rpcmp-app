@@ -1,7 +1,7 @@
-import { Tab, Composite, TextView, Switch, app, ImageView, ScrollView, device } from "tabris";
-import { currentStyle, navigationView } from "..";
-import { LoginPage } from "../pages/loginPage";
-import { RollUp, PopUp } from "../libs/ui";
+import { Tab, Composite, TextView, Switch, app, ImageView, ScrollView, device } from 'tabris';
+import { currentStyle, navigationView } from '..';
+import { LoginPage } from '../pages/loginPage';
+import { RollUp, PopUp } from '../libs/ui';
 
 export = new Tab({ left: 0, right: 0, top: 0, bottom: 0 })
     .onAppear.once(({ target: tab }) => {

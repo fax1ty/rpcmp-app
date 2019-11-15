@@ -124,6 +124,7 @@ function handleAuth(values: { email?: string; token?: string; password?: string;
         rpcmp_api.users.auth(values)
             .then(data => {
                 if (data.type == 'login') {
+                    localStorage.setItem('id', data.user.id.toString());
                     localStorage.setItem('token', data.user.token);
                     localStorage.setItem('name', data.user.name);
                     localStorage.setItem('email', data.user.email);
@@ -171,6 +172,7 @@ function handleAuth(values: { email?: string; token?: string; password?: string;
 
                                         rpcmp_api.users.setProfileData({ name: regNameInput.text, email: regEmailInput.text, password: regPasswordInput.text, token: data.user.token })
                                             .then(() => {
+                                                localStorage.setItem('id', data.user.id.toString());
                                                 localStorage.setItem('token', data.user.token);
                                                 localStorage.setItem('name', regNameInput.text);
                                                 localStorage.setItem('email', regEmailInput.text);

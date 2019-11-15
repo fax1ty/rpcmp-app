@@ -8,7 +8,7 @@ interface GalleryItem {
     width: number;
     height: number;
     size: number;
-    date_create: string;
+    date_added: number;
 }
 
 interface GalleryAlbum {
@@ -17,8 +17,10 @@ interface GalleryAlbum {
 }
 
 interface GalleryAPI {
-    getAlbums: () => Array<GalleryAlbum>;
-    getMedia: (album: GalleryAlbum, cb: (items: Array<GalleryItem>) => void) => void;
+    getAlbums: (cb?: (items: Array<GalleryAlbum>) => void, err?: (data: any) => void) => void
+    getMedia: (album: GalleryAlbum, cb?: (items: Array<GalleryItem>) => void, err?: (data: any) => void) => void;
+    getMediaThumbnail: (media: GalleryItem, cb?: (item: GalleryItem) => void, err?: (data: any) => void) => void;
+    getHQImageData: (media: GalleryItem, cb?: (item: any) => void, err?: (data: any) => void) => void;
 }
 
 declare const galleryAPI: GalleryAPI;
