@@ -9,7 +9,7 @@
   <preference name="UseStrictSSL" value="false" />
 
   <plugin name="tabris-plugin-maps" spec="https://github.com/fax1ty/tabris-plugin-maps.git">
-    <variable name="ANDROID_API_KEY" value="$ANDROID_API_KEY" />
+    <variable name="ANDROID_API_KEY" value="$ANDROID_API_KEY" /> 
   </plugin>
   <plugin name="cordova-plugin-vibration" spec="https://github.com/maxappsmobile/cordova-plugin-vibration.git" />
   <plugin name="cordova-plugin-native-geolocation" spec="https://github.com/fax1ty/cordova-plugin-native-geolocation.git" />
@@ -19,7 +19,7 @@
 
   <!-- Соц.вход -->
   <plugin name="cordova-vk-auth" spec="https://github.com/iRapoo/cordova-vk-auth.git">
-    <variable name="VK_APP_ID" value="7201477" />
+    <variable name="VK_APP_ID" value="$VK_APP_ID" />
   </plugin>
   <plugin name="cordova-plugin-googleplus" source="https://github.com/EddyVerbruggen/cordova-plugin-googleplus.git">
     <variable name="PLAY_SERVICES_VERSION" value="17.0.0" />
