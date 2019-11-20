@@ -7,10 +7,10 @@ import { currentStyle } from '..';
 
 export class AppPage extends Page {
     constructor() {
-        super({ left: 0, right: 0, top: 0, bottom: 0 });
+        super({ left: 0, right: 0, top: 0, bottom: 0, background: currentStyle.colors.main });
 
         this
-            .onAppear(({ target: page }) => {
+            .onAppear.once(({ target: page }) => {
                 statusBar.displayMode = 'default';
                 statusBar.background = currentStyle.colors.main;
                 if (currentStyle.isLightStatusBar) statusBar.theme = 'light';

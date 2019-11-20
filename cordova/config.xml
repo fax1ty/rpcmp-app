@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<widget id="ru.fax1ty.rpcmp" version="0.1.0" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android">
+<widget id="ru.fax1ty.rpcmp" version="0.1.2" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android">
   <name>RPCMP</name>
   <description>Рамен!</description>
   <author email="fax1ty.ru@gmail.com">fax1ty</author>

@@ -3,13 +3,14 @@ import { RollUp } from '../libs/ui';
 import rpcmp_api = require('../libs/rpcmp_api');
 import { currentStyle, navigationView } from '..';
 import { AppPage } from './appPage';
+import config = require('../config');
 
 export class LoginPage extends Page {
     constructor() {
-        super({ left: 0, right: 0, top: 0, bottom: 0 });
+        super({ left: 0, right: 0, top: 0, bottom: 0, background: currentStyle.colors.main });
 
         this
-            .onAppear(({ target: page }) => {
+            .onAppear.once(({ target: page }) => {
                 statusBar.displayMode = 'float';
                 statusBar.background = 'transparent';
                 if (currentStyle.isLightStatusBar) statusBar.theme = 'light';
@@ -95,7 +96,7 @@ export class LoginPage extends Page {
 
                                         let rollUp = new RollUp({ title: 'Вход через GitHub', colors: { background: currentStyle.colors.main, title: currentStyle.colors.opposite } })
                                             .append(
-                                                new WebView({ background: currentStyle.colors.main, left: 25, right: 25, bottom: 25, cornerRadius: 18, height: device.screenHeight * 0.75, url: 'https://github.com/login/oauth/authorize?client_id=71588aeb42511e6d2fca&scope=user' })
+                                                new WebView({ background: currentStyle.colors.main, left: 25, right: 25, bottom: 25, cornerRadius: 18, height: device.screenHeight * 0.75, url: `https://github.com/login/oauth/authorize?client_id=${config.GITHUB_CLIENT_ID}&scope=user` })
                                                     .onLoad.once(() => loader.dispose())
                                                     .on('navigate', (data: any) => {
                                                         let x = (data.url as string).split('/?code=');

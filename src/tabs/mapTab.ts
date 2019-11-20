@@ -1,10 +1,11 @@
-import { Tab, ImageView, Composite, TextView, ActivityIndicator, TextInput, ScrollView, device, contentView } from 'tabris';
+import { Tab, ImageView, Composite, TextView, ActivityIndicator, TextInput, ScrollView, device, contentView, CollectionView, Slider } from 'tabris';
 import { currentStyle } from '..';
 import { StaticVolcanoRollUp, GalleryPicker } from '../libs/components';
 import { RollUp, Notification } from '../libs/ui';
 import rpcmp_api = require('../libs/rpcmp_api');
 import moment = require('moment');
-import { uploadImage } from '../libs/utils';
+import { uploadImage, getDistance } from '../libs/utils';
+import { MapPoint } from '../libs/interfaces';
 
 export = new Tab({ left: 0, right: 0, top: 0, bottom: 0 })
     .onAppear.once(({ target: tab }) => {
@@ -39,9 +40,12 @@ export = new Tab({ left: 0, right: 0, top: 0, bottom: 0 })
 
                 map.setMapStyle(JSON.stringify(currentStyle.googleMap));
 
+                let mapPoints = new Array<MapPoint>();
+
                 rpcmp_api.map.getAllActivePoints()
-                    .then(mapPoints => {
-                        mapPoints.items.forEach(point => {
+                    .then(data => {
+                        mapPoints = data.items;
+                        data.items.forEach(point => {
                             let marker = new esmaps.Marker({ position: point.position, image: { src: currentStyle.icons.beerVolcano } });
                             map.addMarker(
                                 marker.on('tap', () => new StaticVolcanoRollUp(point, marker))
@@ -162,7 +166,7 @@ export = new Tab({ left: 0, right: 0, top: 0, bottom: 0 })
                                                                                             placeDateInput,
                                                                                             new ImageView({ right: 15, image: currentStyle.icons.time, tintColor: '#fff', padding: 10, background: currentStyle.colors.moreContrast, cornerRadius: 30 / 4, highlightOnTouch: true, width: 30, height: 30, centerY: 0 })
                                                                                                 .onTap(() => {
-                                                                                                    datePicker.show({ mode: 'datetime', date: date, androidTheme: currentStyle.isLightStatusBar ? 0 : 4, doneButtonColor: currentStyle.colors.contrast, cancelButtonColor: currentStyle.colors.contrast, allowOldDates: false, is24Hour: true, minDate: date }, data => {
+                                                                                                    datePicker.show({ mode: 'datetime', date: date, androidTheme: currentStyle.isLightStatusBar ? 0 : 4, doneButtonColor: currentStyle.colors.contrast, cancelButtonColor: currentStyle.colors.contrast, allowOldDates: false, minDate: date }, data => {
                                                                                                         date = new Date(data);
                                                                                                         placeDateInput.text = `${moment(date).format('DD.MM.YYYY - HH:MM (UTC ZZ)')}`;
                                                                                                     }, err => console.error(err));
@@ -206,6 +210,7 @@ export = new Tab({ left: 0, right: 0, top: 0, bottom: 0 })
                                                                                                         rollUp.close();
                                                                                                         loader.dispose();
                                                                                                         lastMarker.on('tap', () => new StaticVolcanoRollUp(data.point, lastMarker));
+                                                                                                        mapPoints.push(data.point);
                                                                                                     })
                                                                                                     .catch(err => { console.error('Добавление точки', err); loader.dispose(); });
                                                                                             })
@@ -239,6 +244,106 @@ export = new Tab({ left: 0, right: 0, top: 0, bottom: 0 })
                                 else new Notification({ image: currentStyle.icons.lightBulb, colors: { background: currentStyle.colors.main, text: currentStyle.colors.opposite }, closeCondition: { autoDuration: 3 * 1000 }, title: 'Сообщение', text: 'Нельзя иметь более одного активного мероприятия! Спамить можно и в Одноклассниках' });
                             })
                             .catch(err => console.error(err));
+                    });
+                new Composite({ highlightOnTouch: true, background: currentStyle.colors.moreContrast, padding: 15, right: 25, top: 25, cornerRadius: 18, elevation: 3 })
+                    .append(
+                        new TextView({ text: 'Отобразить списком', textColor: '#fff' })
+                    )
+                    .appendTo(tab)
+                    .onTap(() => {
+                        let sortMethod: 'more' | 'less' = 'more';
+                        let filterDistance = 10;
+                        console.log(mapPoints);
+                        let inputArray = mapPoints.filter(point => getDistance(myPos[0], myPos[1], point.position[0], point.position[1]) <= filterDistance).sort((a, b) => sortMethod == 'more' ? b.followers.length - a.followers.length : a.followers.length - b.followers.length);
+
+                        let slider = new Slider({ centerY: 0, left: 'prev() 15', right: 'next() 15', minimum: 1, selection: filterDistance, maximum: 50, tintColor: currentStyle.colors.moreContrast });
+                        let currentValueText = new TextView({ centerY: 0, left: 0, right: 'next() 15', text: `Текущее расстояние: ${slider.selection} км`, textColor: currentStyle.colors.opposite, opacity: 0.75 });
+                        let rollUp = new RollUp({ title: 'Список мест', colors: { background: currentStyle.colors.main, title: currentStyle.colors.opposite } })
+                        if (inputArray.length == 0) {
+                            rollUp
+                                .append(
+                                    new Composite({ left: 25, right: 25 })
+                                        .append(
+                                            new ImageView({ width: 150, height: 150, centerX: 0, image: 'https://i.imgur.com/UDTcplx.png' }),
+                                            new TextView({ top: 'prev() 25', left: 0, right: 0, alignment: 'centerX', text: 'Оп, а тут заяц в шляпе', textColor: currentStyle.colors.opposite, font: 'bold 21px' })
+                                        )
+                                );
+                        }
+                        else {
+                            rollUp
+                                .append(
+                                    new Composite({ left: 25, right: 25 })
+                                        .append(
+                                            new TextView({ left: 0, right: 0, text: 'Расстояние до точки', textColor: currentStyle.colors.opposite }),
+                                            new Composite({ left: 0, right: 0, top: 'prev() 15' })
+                                                .append(
+                                                    new TextView({ left: 0, text: `${slider.minimum} км`, textColor: currentStyle.colors.opposite }),
+                                                    slider
+                                                        .onSelect(({ selection }) => {
+                                                            filterDistance = selection;
+                                                            currentValueText.text = `Текущее расстояние: ${selection} км`;
+                                                        }),
+                                                    new TextView({ right: 0, text: `${slider.maximum} км`, textColor: currentStyle.colors.opposite })
+                                                ),
+                                            new Composite({ left: 0, right: 0, top: 'prev() 15' })
+                                                .append(
+                                                    currentValueText,
+                                                    new Composite({ right: 0, padding: 15, cornerRadius: 18, background: currentStyle.colors.contrast, highlightOnTouch: true })
+                                                        .append(
+                                                            new ImageView({ centerY: 0, height: 15, image: currentStyle.icons.menu.map, tintColor: currentStyle.colors.opposite }),
+                                                            new TextView({ centerY: 0, left: 'prev() 15', text: 'Более популярные', font: 'bold 14px', textColor: currentStyle.colors.opposite })
+                                                        )
+                                                        .onTap(({ target: button }) => {
+                                                            if (sortMethod == 'more') {
+                                                                sortMethod = 'less';
+                                                                button.children(TextView).first().text = 'Менее популярные';
+                                                            }
+                                                            else {
+                                                                sortMethod = 'more';
+                                                                button.children(TextView).first().text = 'Более популярные';
+                                                            }
+                                                        })
+                                                )
+                                        ),
+                                    new CollectionView({
+                                        left: 25, right: 25, top: 'prev() 25', height: device.screenHeight * 0.55, scrollbarVisible: false,
+                                        itemCount: inputArray.length,
+                                        createCell: () => {
+                                            let cell = new Composite({ left: 0, right: 0 });
+                                            new Composite({ padding: 15, background: currentStyle.colors.contrast, left: 0, right: 0, cornerRadius: 18, highlightOnTouch: true })
+                                                .append(
+                                                    new ImageView({ centerY: 0, scaleMode: 'fill', height: 50, width: 50, cornerRadius: 18, background: currentStyle.colors.moreContrast }),
+                                                    new TextView({ left: 'prev() 15', right: 'next() 15', centerY: 0, text: 'Классный заголовок', font: 'bold 16px', textColor: currentStyle.colors.opposite }),
+                                                    new Composite({ right: 0, centerY: 0 })
+                                                        .append(
+                                                            new Composite()
+                                                                .append(
+                                                                    new ImageView({ centerY: 0, height: 15, image: currentStyle.icons.compass, tintColor: currentStyle.colors.opposite }),
+                                                                    new TextView({ class: 'distance-text', centerY: 0, left: 'prev() 15', text: 'XX км', font: '16px', textColor: currentStyle.colors.opposite })
+                                                                ),
+                                                            new Composite({ left: 'prev() 15' })
+                                                                .append(
+                                                                    new ImageView({ centerY: 0, height: 15, image: currentStyle.icons.menu.map, tintColor: currentStyle.colors.opposite }),
+                                                                    new TextView({ class: 'followers-text', centerY: 0, left: 'prev() 15', text: 'XX', font: '16px', textColor: currentStyle.colors.opposite })
+                                                                )
+                                                        )
+                                                )
+                                                .appendTo(cell);
+                                            return cell;
+                                        },
+                                        updateCell: (cell, i) => {
+                                            if (i != 0) cell.padding = { top: 25 }
+                                            else cell.padding = 0;
+
+                                            let p = inputArray[i];
+                                            cell.find(ImageView).first().image = p.place.photos[0];
+                                            cell.find('.distance-text').first(TextView).text = `${getDistance(myPos[0], myPos[1], p.position[0], p.position[1])} км`;
+                                            cell.find('.followers-text').first(TextView).text = p.followers.length.toString();
+                                            cell.onTap(() => new StaticVolcanoRollUp(p));
+                                        }
+                                    })
+                                );
+                        }
                     });
             });
     });

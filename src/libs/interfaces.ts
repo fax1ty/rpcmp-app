@@ -89,3 +89,17 @@ export interface GetPointsResponseData {
 export interface GetAllActivePointsResponseData {
     items: Array<MapPoint>;
 }
+
+export interface GetStoryLineResponseData {
+    items: Array<FeedContent>;
+}
+
+export interface FeedContent {
+    type: 'story' | 'post' | 'place';
+    content: {
+        title: string;
+        text: string;
+        background: string;
+    }
+    point?: MapPoint;
+}

@@ -40,7 +40,9 @@ export class BottomMenu extends Composite {
 }
 
 export class StaticVolcanoRollUp extends RollUp {
-    constructor(point: MapPoint, marker: TabrisMarker) {
+    onVolcanoRemove = (cb: any) => this.on('volcanoRemove', cb);
+
+    constructor(point: MapPoint, marker?: TabrisMarker) {
         super({ title: point.place.title, colors: { background: currentStyle.colors.main, title: currentStyle.colors.opposite } });
 
         let imageScroll = new ScrollView({ left: 25, right: 25, height: 150, direction: 'horizontal', scrollbarVisible: false });
@@ -69,7 +71,8 @@ export class StaticVolcanoRollUp extends RollUp {
                             text: 'Гори синим пламенем!', action: () => {
                                 rpcmp_api.map.removePoint({ id: point.id })
                                     .then(() => {
-                                        marker.dispose();
+                                        this.trigger('volcanoRemove');
+                                        if (marker) marker.dispose();
                                         this.close();
                                     })
                                     .catch(err => console.error(err))
@@ -116,6 +119,7 @@ interface Style {
         blackToTransparent: string;
     }
     icons: {
+        update: string;
         block: string;
         close: string;
         lightBulb: string;
@@ -156,6 +160,7 @@ export class StyleManager {
             blackToTransparent: 'linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 100%)'
         },
         icons: {
+            update: 'https://i.imgur.com/v4VRXNS.png', // https://www.flaticon.com/free-icon/reload_159657'
             block: 'https://i.imgur.com/i1qQL0e.png',
             close: 'https://i.imgur.com/Wj00f51.png',
             lightBulb: 'https://github.com/greaterweb/emoji-highres/blob/master/160x160/1f4a1.png?raw=true',
@@ -194,6 +199,7 @@ export class StyleManager {
             blackToTransparent: 'linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 100%)'
         },
         icons: {
+            update: 'https://i.imgur.com/v4VRXNS.png', // https://www.flaticon.com/free-icon/reload_159657'
             block: 'https://i.imgur.com/i1qQL0e.png',
             close: 'https://i.imgur.com/Wj00f51.png',
             lightBulb: 'https://github.com/greaterweb/emoji-highres/blob/master/160x160/1f4a1.png?raw=true',

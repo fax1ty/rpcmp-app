@@ -1,10 +1,9 @@
-import { Certificates, AddCertificateResponseData, User, MapPoint, PointPlace, RemovePointResponseData, GetPointDataResponseData, FollowPlaceResponseData, UnfollowPlaceResponseData, ReverseGeocodeResponseData, APIResponse, SetProfileDataResponseData, AddPointResponseData, AuthResponseData, GetPointsResponseData, GetAllActivePointsResponseData } from './interfaces';
-
-let GATEWAY = 'http://85.113.37.241:8000/api/v1';
+import { Certificates, AddCertificateResponseData, User, MapPoint, PointPlace, RemovePointResponseData, GetPointDataResponseData, FollowPlaceResponseData, UnfollowPlaceResponseData, ReverseGeocodeResponseData, APIResponse, SetProfileDataResponseData, AddPointResponseData, AuthResponseData, GetPointsResponseData, GetAllActivePointsResponseData, GetStoryLineResponseData } from './interfaces';
+import config = require('../config');
 
 function call<T>(action: string, data: any) {
     return new Promise<T>((resolve, reject) => {
-        fetch(GATEWAY, { method: 'POST', body: JSON.stringify(Object.assign({ action: action }, data)), headers: { 'Content-Type': 'application/json' } })
+        fetch(config.API_GATEWAY, { method: 'POST', body: JSON.stringify(Object.assign({ action: action }, data)), headers: { 'Content-Type': 'application/json' } })
             .then((data) => data.json().then((data: APIResponse) => {
                 if (!data.error) resolve(data.data as any);
                 else reject(data.error);
@@ -16,6 +15,11 @@ function call<T>(action: string, data: any) {
 }
 
 export = {
+    checkConnection: () => new Promise((resolve, reject) => {
+        fetch(config.API_GATEWAY, { timeout: 1000, headers: { 'Content-Type': 'application/json' } } as any)
+            .then(() => resolve())
+            .catch(() => reject());
+    }),
     users: {
         auth: (values: { email?: string; token?: string; password?: string; social?: { github?: { code: string; }; vk?: { token: string; }, google?: { token: string; } } }) => call<AuthResponseData>('users.auth', values),
         addCertificate: (values: { id: Certificates }) => call<AddCertificateResponseData>('users.addCertificate', Object.assign(values, { token: localStorage.getItem('token') })),
@@ -34,6 +38,6 @@ export = {
         reverseGeocode: (values: { point: Array<number>; }) => call<ReverseGeocodeResponseData>('utils.reverseGeocode', Object.assign(values, { token: localStorage.getItem('token') }))
     },
     feed: {
-
+        getStoryLine: () => call<GetStoryLineResponseData>('feed.getStoryLine', { token: localStorage.getItem('token') })
     }
 }

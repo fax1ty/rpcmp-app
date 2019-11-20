@@ -1,4 +1,5 @@
 import { fs } from 'tabris';
+import config = require('../config');
 
 export function encodeArrayBufferAsBase64(arraybuffer: ArrayBuffer) {
     let chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
@@ -55,15 +56,13 @@ interface ImgurResponse {
     status: number;
 }
 
-let IMGUR_CLIENT_ID = 'dbd936330207126';
-
 export function uploadImage(uri: string) {
     return new Promise<ImgurResponse['data']['link']>((resolve, reject) => {
         fs.readFile(uri)
             .then(buffer => {
                 let formData = new FormData();
                 formData.append('image', encodeArrayBufferAsBase64(buffer));
-                fetch('https://api.imgur.com/3/image', { method: 'POST', body: formData, headers: { Authorization: `Client-ID ${IMGUR_CLIENT_ID}` } })
+                fetch('https://api.imgur.com/3/image', { method: 'POST', body: formData, headers: { Authorization: `Client-ID ${config.IMGUR_CLIENT_ID}` } })
                     .then(response => {
                         if (response) {
                             response.json()
@@ -79,4 +78,24 @@ export function uploadImage(uri: string) {
             })
             .catch(err => reject(err));
     });
+}
+
+// https://stackoverflow.com/a/50455162
+export function getDistance(lat1: number, lon1: number, lat2: number, lon2: number) {
+    var R = 6371; // km
+    var dLat = toRad(lat2 - lat1);
+    var dLon = toRad(lon2 - lon1);
+    var lat1 = toRad(lat1);
+    var lat2 = toRad(lat2);
+
+    var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2);
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    var d = R * c;
+    return d;
+}
+
+// Converts numeric degrees to radians
+export function toRad(value: number) {
+    return value * Math.PI / 180;
 }
