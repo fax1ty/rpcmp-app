@@ -9,7 +9,7 @@
   <preference name="UseStrictSSL" value="false" />
 
   <plugin name="tabris-plugin-maps" spec="https://github.com/fax1ty/tabris-plugin-maps.git">
-    <variable name="ANDROID_API_KEY" value="$ANDROID_API_KEY" /> 
+    <variable name="ANDROID_API_KEY" value="$ANDROID_API_KEY" />
   </plugin>
   <plugin name="cordova-plugin-vibration" spec="https://github.com/maxappsmobile/cordova-plugin-vibration.git" />
   <plugin name="cordova-plugin-native-geolocation" spec="https://github.com/fax1ty/cordova-plugin-native-geolocation.git" />
@@ -39,11 +39,16 @@
       <application android:usesCleartextTraffic="true" />
     </edit-config>
 
-    <!-- dogfood and release are build types. -->
-    <!-- free and paid are product flavors. -->
-
-    <resource-file src="res/values/values.xml" target="/app/build/generated/res/google-services/release/values/values.xml" />
-    <resource-file src="res/values/global_tracker.xml" target="/app/build/generated/res/google-services/free/release/xml/global_tracker.xml" />
+    <edit-config file="app/src/main/res/values/strings.xml" target="/resources" mode="merge">
+      <string name="default_web_client_id" translatable="false">$FIREBASE_WEB_CLIENT_ID</string>
+      <string name="firebase_database_url" translatable="false">$FIREBASE_DATABASE_URL</string>
+      <string name="gcm_defaultSenderId" translatable="false">$FIREBASE_GCM_SENDER_ID</string>
+      <string name="google_api_key" translatable="false">$FIREBASE_GOOGLE_API_KEY</string>
+      <string name="google_app_id" translatable="false">$FIREBASE_GOOGLE_APP_ID</string>
+      <string name="google_crash_reporting_api_key" translatable="false">$FIREBASE_GOOGLE_CRASH_API_KEY</string>
+      <string name="google_storage_bucket" translatable="false">$FIREBASE_GOOGLE_STORAGE_BUCKET</string>
+      <string name="project_id" translatable="false">$FIREBASE_PROJECT_ID</string>
+    </edit-config>
 
     <icon src="res/icon/android/ldpi.png" density="ldpi" />
     <icon src="res/icon/android/mdpi.png" density="mdpi" />
