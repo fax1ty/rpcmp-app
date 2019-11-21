@@ -26,12 +26,27 @@
     <variable name="REVERSED_CLIENT_ID" value="$REVERSED_CLIENT_ID" />
   </plugin>
 
-  <plugin name="cordova-plugin-firebase-crashlytics" source="https://github.com/ReallySmallSoftware/cordova-plugin-firebase-crashlytics.git">
+  <!-- <plugin name="cordova-plugin-firebase-crashlytics" source="https://github.com/ReallySmallSoftware/cordova-plugin-firebase-crashlytics.git">
     <variable name="ANDROID_FIREBASE_CORE_VERSION" value="17.0.0" />
   </plugin>
 
   <plugin name="cordova-plugin-firebase-performance" source="https://github.com/adailtonribeiro/cordova-plugin-firebase-performance.git">
     <variable name="FIREBASE_PERF_VERSION" value="17.0.0" />
+  </plugin> -->
+
+  <plugin name="cordova-plugin-firebasex" source="https://github.com/dpa99c/cordova-plugin-firebasex.git">
+    <variable name="ANDROID_PLAY_SERVICES_TAGMANAGER_VERSION" value="17.0.0" />
+    <variable name="ANDROID_FIREBASE_ANALYTICS_VERSION" value="17.0.0" />
+    <variable name="ANDROID_FIREBASE_MESSAGING_VERSION" value="19.0.0" />
+    <variable name="ANDROID_FIREBASE_CONFIG_VERSION" value="18.0.0" />
+    <variable name="ANDROID_FIREBASE_PERF_VERSION" value="18.0.0" />
+    <variable name="ANDROID_FIREBASE_AUTH_VERSION" value="18.0.0" />
+    <variable name="ANDROID_CRASHLYTICS_VERSION" value="2.10.1" />
+    <variable name="ANDROID_CRASHLYTICS_NDK_VERSION" value="2.1.0" />
+
+    <variable name="FIREBASE_ANALYTICS_COLLECTION_ENABLED" value="false" />
+    <variable name="FIREBASE_PERFORMANCE_COLLECTION_ENABLED" value="true" />
+    <variable name="FIREBASE_CRASHLYTICS_COLLECTION_ENABLED" value="true" />
   </plugin>
 
   <platform name="android">
