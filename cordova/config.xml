@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<widget id="ru.fax1ty.rpcmp" version="0.1.2" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android">
+<widget id="ru.fax1ty.rpcmp" version="0.1.3" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android">
   <name>RPCMP</name>
   <description>Рамен!</description>
   <author email="fax1ty.ru@gmail.com">fax1ty</author>
@@ -26,10 +26,24 @@
     <variable name="REVERSED_CLIENT_ID" value="$REVERSED_CLIENT_ID" />
   </plugin>
 
+  <plugin name="cordova-plugin-firebase-crashlytics" source="https://github.com/ReallySmallSoftware/cordova-plugin-firebase-crashlytics.git">
+    <variable name="ANDROID_FIREBASE_CORE_VERSION" value="17.0.0" />
+  </plugin>
+
+  <plugin name="cordova-plugin-firebase-performance" source="https://github.com/adailtonribeiro/cordova-plugin-firebase-performance.git">
+    <variable name="FIREBASE_PERF_VERSION" value="17.0.0" />
+  </plugin>
+
   <platform name="android">
     <edit-config file="app/src/main/AndroidManifest.xml" target="/manifest/application" mode="merge">
       <application android:usesCleartextTraffic="true" />
     </edit-config>
+
+    <!-- dogfood and release are build types. -->
+    <!-- free and paid are product flavors. -->
+
+    <resource-file src="res/values/values.xml" target="/app/build/generated/res/google-services/release/values/values.xml" />
+    <resource-file src="res/values/global_tracker.xml" target="/app/build/generated/res/google-services/free/release/xml/global_tracker.xml" />
 
     <icon src="res/icon/android/ldpi.png" density="ldpi" />
     <icon src="res/icon/android/mdpi.png" density="mdpi" />

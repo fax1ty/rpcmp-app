@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<resources>
+
+    <!-- Present in all applications -->
+    <string name="google_app_id" translatable="false">$FIREBASE_GOOGLE_APP_ID</string>
+
+    <!-- Present in applications with the appropriate services configured -->
+    <string name="gcm_defaultSenderId" translatable="false">$FIREBASE_GCM_DEFAULT_SENDER_ID</string>
+    <string name="default_web_client_id" translatable="false">$FIREBASE_WEB_CLIENT_ID</string>
+    <string name="ga_trackingId" translatable="false">$FIREBASE_GA_TRACKING_ID</string>
+    <string name="firebase_database_url" translatable="false">$FIREBASE_DATABASE_URL</string>
+    <string name="google_api_key" translatable="false">$FIREBASE_GOOGLE_API_KEY</string>
+    <string name="google_crash_reporting_api_key" translatable="false">$FIREBASE_GOOGLE_API_KEY</string>
+    <string name="project_id" translatable="false">$FIREBASE_PROJECT_ID</string>
+
+</resources>
