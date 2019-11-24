@@ -1,7 +1,7 @@
 import { Page, ImageView, statusBar, Composite, TextInput, TextView, ScrollView, device, WebView, ActivityIndicator, contentView } from 'tabris';
 import { RollUp } from '../libs/ui';
 import rpcmp_api = require('../libs/rpcmp_api');
-import { currentStyle, navigationView, crashlytics } from '..';
+import { currentStyle, navigationView } from '..';
 import { AppPage } from './appPage';
 import config = require('../config');
 
@@ -125,7 +125,8 @@ function handleAuth(values: { email?: string; token?: string; password?: string;
         rpcmp_api.users.auth(values)
             .then(data => {
                 if (data.type == 'login') {
-                    crashlytics.setUserIdentifier(data.user.id.toString()); // Необходимо занести в политику приватности
+                    // crashlytics.setUserIdentifier(data.user.id.toString()); // Необходимо занести в политику приватности
+                    FirebasePlugin.setCrashlyticsUserId(data.user.id.toString()); // Необходимо занести в политику приватности
                     localStorage.setItem('id', data.user.id.toString());
                     localStorage.setItem('token', data.user.token);
                     localStorage.setItem('name', data.user.name);
@@ -174,7 +175,8 @@ function handleAuth(values: { email?: string; token?: string; password?: string;
 
                                         rpcmp_api.users.setProfileData({ name: regNameInput.text, email: regEmailInput.text, password: regPasswordInput.text, token: data.user.token })
                                             .then(() => {
-                                                crashlytics.setUserIdentifier(data.user.id.toString()); // Необходимо занести в политику приватности
+                                                // crashlytics.setUserIdentifier(data.user.id.toString()); // Необходимо занести в политику приватности
+                                                FirebasePlugin.setCrashlyticsUserId(data.user.id.toString()); // Необходимо занести в политику приватности
                                                 localStorage.setItem('id', data.user.id.toString());
                                                 localStorage.setItem('token', data.user.token);
                                                 localStorage.setItem('name', regNameInput.text);

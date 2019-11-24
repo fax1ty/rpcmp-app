@@ -15,7 +15,7 @@ export let navigationView = new NavigationView({ toolbarVisible: false, left: 0,
     .appendTo(contentView);
 
 SocialVk.init(config.VK_ID);
-export let crashlytics = FirebaseCrashlytics.initialise();
+// export let crashlytics = FirebaseCrashlytics.initialise();
 
 statusBar.displayMode = 'float';
 statusBar.background = 'transparent';
@@ -36,7 +36,8 @@ rpcmp_api.checkConnection()
             rpcmp_api.users.auth({ token: localStorage.getItem('token') })
                 .then(data => {
                     if (data.type == 'login') {
-                        crashlytics.setUserIdentifier(data.user.id.toString()); // Необходимо занести в политику приватности
+                        // crashlytics.setUserIdentifier(data.user.id.toString()); // Необходимо занести в политику приватности
+                        FirebasePlugin.setCrashlyticsUserId(data.user.id.toString()); // Необходимо занести в политику приватности
                         localStorage.setItem('id', data.user.id.toString());
                         localStorage.setItem('email', data.user.email);
                         localStorage.setItem('token', data.user.token);

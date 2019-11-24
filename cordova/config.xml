@@ -26,15 +26,15 @@
     <variable name="REVERSED_CLIENT_ID" value="$REVERSED_CLIENT_ID" />
   </plugin>
 
-  <plugin name="cordova-plugin-firebase-crashlytics" source="https://github.com/ReallySmallSoftware/cordova-plugin-firebase-crashlytics.git">
+  <!-- <plugin name="cordova-plugin-firebase-crashlytics" source="https://github.com/ReallySmallSoftware/cordova-plugin-firebase-crashlytics.git">
     <variable name="ANDROID_FIREBASE_CORE_VERSION" value="17.0.0" />
   </plugin>
 
   <plugin name="cordova-plugin-firebase-performance" source="https://github.com/adailtonribeiro/cordova-plugin-firebase-performance.git">
     <variable name="FIREBASE_PERF_VERSION" value="17.0.0" />
-  </plugin>
+  </plugin> -->
 
-  <!-- <plugin name="cordova-plugin-firebasex" source="https://github.com/dpa99c/cordova-plugin-firebasex.git">
+  <plugin name="cordova-plugin-firebasex" source="https://github.com/fax1ty/cordova-plugin-firebasex.git">
     <variable name="ANDROID_PLAY_SERVICES_TAGMANAGER_VERSION" value="17.0.0" />
     <variable name="ANDROID_FIREBASE_ANALYTICS_VERSION" value="17.0.0" />
     <variable name="ANDROID_FIREBASE_MESSAGING_VERSION" value="19.0.0" />
@@ -47,16 +47,16 @@
     <variable name="FIREBASE_ANALYTICS_COLLECTION_ENABLED" value="false" />
     <variable name="FIREBASE_PERFORMANCE_COLLECTION_ENABLED" value="true" />
     <variable name="FIREBASE_CRASHLYTICS_COLLECTION_ENABLED" value="true" />
-  </plugin> -->
+  </plugin>
 
   <platform name="android">
-    <hook type="before_build" src="./before_build_hook.js" />
+    <!-- <hook type="before_build" src="./before_build_hook.js" /> -->
 
     <edit-config file="app/src/main/AndroidManifest.xml" target="/manifest/application" mode="merge">
       <application android:usesCleartextTraffic="true" />
     </edit-config>
 
-    <!-- <edit-config file="app/src/main/res/values/strings.xml" target="/resources" mode="merge">
+    <edit-config file="app/src/main/res/values/strings.xml" target="/resources" mode="merge">
       <string name="default_web_client_id" translatable="false">$FIREBASE_WEB_CLIENT_ID</string>
       <string name="firebase_database_url" translatable="false">$FIREBASE_DATABASE_URL</string>
       <string name="gcm_defaultSenderId" translatable="false">$FIREBASE_GCM_SENDER_ID</string>
@@ -65,7 +65,7 @@
       <string name="google_crash_reporting_api_key" translatable="false">$FIREBASE_GOOGLE_CRASH_API_KEY</string>
       <string name="google_storage_bucket" translatable="false">$FIREBASE_GOOGLE_STORAGE_BUCKET</string>
       <string name="project_id" translatable="false">$FIREBASE_PROJECT_ID</string>
-    </edit-config> -->
+    </edit-config>
 
     <icon src="res/icon/android/ldpi.png" density="ldpi" />
     <icon src="res/icon/android/mdpi.png" density="mdpi" />
