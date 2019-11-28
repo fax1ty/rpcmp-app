@@ -327,9 +327,6 @@ export class GalleryPicker extends Composite {
     private tapListener = () => {
         let photoAlbums = new Array<Array<GalleryItem>>();
 
-        // window.FirebasePerformance.startTrace('gallery_open');
-        FirebasePlugin.startTrace('gallery_open', () => { }, err => console.error(err));
-
         galleryAPI.getAlbums(albums => {
             albums.forEach((album, i, arr) => {
                 galleryAPI.getMedia(album, async images => {
@@ -376,9 +373,6 @@ export class GalleryPicker extends Composite {
                             }
                         })
                             .appendTo(rollUp);
-
-                        // window.FirebasePerformance.stopTrace('gallery_open');
-                        FirebasePlugin.stopTrace('gallery_open');
                     }
                 })
             })

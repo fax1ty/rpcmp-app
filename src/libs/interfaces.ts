@@ -103,3 +103,7 @@ export interface FeedContent {
     }
     point?: MapPoint;
 }
+
+export interface AddFirebaseTokenResponseData {
+    editedCount: number;
+}

@@ -125,8 +125,6 @@ function handleAuth(values: { email?: string; token?: string; password?: string;
         rpcmp_api.users.auth(values)
             .then(data => {
                 if (data.type == 'login') {
-                    // crashlytics.setUserIdentifier(data.user.id.toString()); // Необходимо занести в политику приватности
-                    FirebasePlugin.setCrashlyticsUserId(data.user.id.toString()); // Необходимо занести в политику приватности
                     localStorage.setItem('id', data.user.id.toString());
                     localStorage.setItem('token', data.user.token);
                     localStorage.setItem('name', data.user.name);
@@ -175,8 +173,6 @@ function handleAuth(values: { email?: string; token?: string; password?: string;
 
                                         rpcmp_api.users.setProfileData({ name: regNameInput.text, email: regEmailInput.text, password: regPasswordInput.text, token: data.user.token })
                                             .then(() => {
-                                                // crashlytics.setUserIdentifier(data.user.id.toString()); // Необходимо занести в политику приватности
-                                                FirebasePlugin.setCrashlyticsUserId(data.user.id.toString()); // Необходимо занести в политику приватности
                                                 localStorage.setItem('id', data.user.id.toString());
                                                 localStorage.setItem('token', data.user.token);
                                                 localStorage.setItem('name', regNameInput.text);
