@@ -82,6 +82,26 @@ export = new Tab({ left: 0, right: 0, top: 0, bottom: 0 })
                                 }
                             })
                     ),
+                new Composite({ left: 25, right: 25, top: 'prev() 25' })
+                    .append(
+                        new TextView({ text: 'Собирать аналитику', centerY: 0, textColor: currentStyle.colors.opposite }),
+                        new Switch({ left: 'prev() 25', checked: localStorage.getItem('theme') == 'dark' ? true : false, thumbOnColor: currentStyle.colors.moreContrast, thumbOffColor: currentStyle.colors.contrast, trackOnColor: currentStyle.colors.contrast })
+                            .onCheckedChanged(({ value: checked }) => {
+                                if (!checked) {
+                                    localStorage.setItem('isAnalyticsOn', 'false');
+                                    firebase.Analytics.analyticsCollectionEnabled = false;
+                                    firebase.Crashlytics.setCrashlyticsCollectionEnabled(false);
+                                    firebase.Performance.performanceCollectionEnabled = false;
+                                }
+                                else {
+                                    localStorage.setItem('isAnalyticsOn', 'true');
+                                    firebase.Analytics.analyticsCollectionEnabled = true;
+                                    firebase.Crashlytics.setCrashlyticsCollectionEnabled(true);
+                                    firebase.Performance.performanceCollectionEnabled = true;
+                                }
+                            })
+                    ),
+                new TextView({ alignment: 'centerX', text: 'Что входит в аналитику? Ничего такого, что собирает крупная IT компания. Нам интересны лишь данные о приложении: сообщения об ошибках и крашах, информация о том, как плавно работает приложение, справляется ли дизайн с поставленными задачами', left: 25, right: 25, top: 'prev() 15', textColor: currentStyle.colors.opposite }),
                 new Composite({ padding: 20, top: 'prev() 25', left: 25, right: 25, background: currentStyle.colors.moreContrast, cornerRadius: 18, highlightOnTouch: true })
                     .append(
                         new TextView({ text: 'Лицензии FOSS', textColor: '#fff', left: 0, right: 0, alignment: 'centerX' })

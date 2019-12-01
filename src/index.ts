@@ -15,7 +15,11 @@ export let navigationView = new NavigationView({ toolbarVisible: false, left: 0,
     .appendTo(contentView);
 
 SocialVk.init(config.VK_ID);
-firebase.Analytics.analyticsCollectionEnabled = true;
+
+// Аналитика
+firebase.Analytics.analyticsCollectionEnabled = localStorage.getItem('isAnalyticsOn') === 'true' ? true : false;
+firebase.Performance.performanceCollectionEnabled = localStorage.getItem('isAnalyticsOn') === 'true' ? true : false;
+firebase.Crashlytics.setCrashlyticsCollectionEnabled(localStorage.getItem('isAnalyticsOn') === 'true' ? true : false);
 
 statusBar.displayMode = 'float';
 statusBar.background = 'transparent';

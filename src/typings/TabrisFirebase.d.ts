@@ -1,7 +1,28 @@
-import { EventObject, NativeObject, PropertyChangedEvent } from "tabris";
+import { EventObject, NativeObject, PropertyChangedEvent, Widget } from 'tabris';
 
 declare global {
     namespace firebase {
+        const Performance: Performance;
+        interface Performance extends NativeObject {
+            performanceCollectionEnabled: boolean;
+            startTrace(name: string): void;
+            stopTrace(name: string): void;
+            incrementMetrics(name1: string, name2: string): void;
+            incrementMetrics(name1: string, name2: string, value: number): void;
+        }
+        const Crashlytics: Crashlytics;
+        interface Crashlytics extends NativeObject {
+            setCrashlyticsCollectionEnabled(enabled: boolean): void;
+            setUserIdentifier(id: string): void;
+            makeCrash(): void;
+            log(value: string): void;
+            log(priority: 0 | 1 | 2 | 3 | 4, tag: string, value: string): void;
+            // Customizing
+            setBool(key: string, value: boolean): void;
+            setString(key: string, value: string): void;
+            setInt(key: string, value: number): void;
+        }
+
         const Analytics: Analytics;
         const Messaging: Messaging;
         const MessagingEvents: MessagingEvents;
@@ -25,7 +46,7 @@ declare global {
             };
             resetInstanceId(): void;
             requestPermissions(): void;
-            on(type: string, listener: (data: any) => void, context?: object): this;
+            on(type: string, listener: (event: any) => void, context?: object): this;
             on(listeners: MessagingEvents): this;
             off(type: string, listener: (event: any) => void, context?: object): this;
             off(listeners: MessagingEvents): this;
