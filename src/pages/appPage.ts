@@ -4,18 +4,10 @@ import mapTab = require('../tabs/mapTab');
 import feedTab = require('../tabs/feedTab');
 import settingsTab = require('../tabs/settingsTab');
 import { currentStyle } from '..';
-import rpcmp_api = require('../libs/rpcmp_api');
 
 export class AppPage extends Page {
     constructor() {
         super({ left: 0, right: 0, top: 0, bottom: 0, background: currentStyle.colors.main });
-
-        if (localStorage.getItem('isNeedToUpdateFirebase') === 'yes') {
-            let oldFirebaseToken = localStorage.getItem('oldFirebaseToken');
-            rpcmp_api.users.addFirebaseToken({ newToken: localStorage.getItem('firebaseToken'), oldToken: oldFirebaseToken ? oldFirebaseToken : '' })
-                .then(() => localStorage.setItem('isNeedToUpdateFirebase', 'no'))
-                .catch(err => console.log(err));
-        }
 
         this
             .onAppear.once(({ target: page }) => {
