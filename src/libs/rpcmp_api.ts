@@ -1,4 +1,4 @@
-import { Certificates, AddCertificateResponseData, User, MapPoint, PointPlace, RemovePointResponseData, GetPointDataResponseData, FollowPlaceResponseData, UnfollowPlaceResponseData, ReverseGeocodeResponseData, APIResponse, SetProfileDataResponseData, AddPointResponseData, AuthResponseData, GetPointsResponseData, GetAllActivePointsResponseData, GetStoryLineResponseData } from './interfaces';
+import { Certificates, AddCertificateResponseData, User, MapPoint, PointPlace, RemovePointResponseData, GetPointDataResponseData, FollowPlaceResponseData, UnfollowPlaceResponseData, ReverseGeocodeResponseData, APIResponse, SetProfileDataResponseData, AddPointResponseData, AuthResponseData, GetPointsResponseData, GetAllActivePointsResponseData, GetStoryLineResponseData, AddFirebaseTokenResponseData } from './interfaces';
 import config = require('../config');
 
 function call<T>(action: string, data: any) {
@@ -24,7 +24,8 @@ export = {
         auth: (values: { email?: string; token?: string; password?: string; social?: { github?: { code: string; }; vk?: { token: string; }, google?: { token: string; } } }) => call<AuthResponseData>('users.auth', values),
         addCertificate: (values: { id: Certificates }) => call<AddCertificateResponseData>('users.addCertificate', Object.assign(values, { token: localStorage.getItem('token') })),
         setProfileData: (values: { name?: User['name']; email?: User['email']; password?: string; token: User['token'] }) => call<SetProfileDataResponseData>('users.setProfileData', values),
-        getPoints: (values?: { owner?: User['id'], filter?: 'active' | 'past' }) => call<GetPointsResponseData>('users.getPoints', Object.assign(values, { token: localStorage.getItem('token') }))
+        getPoints: (values?: { owner?: User['id'], filter?: 'active' | 'past' }) => call<GetPointsResponseData>('users.getPoints', Object.assign(values, { token: localStorage.getItem('token') })),
+        addFirebaseToken: (values: { newToken: string, oldToken: string; }) => call<AddFirebaseTokenResponseData>('users.addFirebaseToken', Object.assign(values, { token: localStorage.getItem('token') }))
     },
     map: {
         addPoint: (values: { type: 'volcano', place: PointPlace, position: MapPoint['position'], date: MapPoint['date'] }) => call<AddPointResponseData>('map.addPoint', Object.assign(values, { token: localStorage.getItem('token') })),

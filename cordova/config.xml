@@ -13,6 +13,7 @@
   <plugin name="tabris-plugin-maps" spec="https://github.com/fax1ty/tabris-plugin-maps.git">
     <variable name="ANDROID_API_KEY" value="$ANDROID_API_KEY" />
   </plugin>
+  <plugin name="tabris-plugin-firebase" spec="https://github.com/eclipsesource/tabris-plugin-firebase.git"/>
   <plugin name="cordova-plugin-vibration" spec="https://github.com/maxappsmobile/cordova-plugin-vibration.git" />
   <plugin name="cordova-plugin-native-geolocation" spec="https://github.com/fax1ty/cordova-plugin-native-geolocation.git" />
   <plugin name="cordova-plugin-datepicker" spec="https://github.com/fax1ty/cordova-plugin-datepicker.git" />

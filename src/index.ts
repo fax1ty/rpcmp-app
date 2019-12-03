@@ -15,6 +15,7 @@ export let navigationView = new NavigationView({ toolbarVisible: false, left: 0,
     .appendTo(contentView);
 
 SocialVk.init(config.VK_ID);
+firebase.Analytics.analyticsCollectionEnabled = localStorage.getItem('isAnalyticsOn') === 'true' ? true : false;
 
 statusBar.displayMode = 'float';
 statusBar.background = 'transparent';
@@ -52,4 +53,18 @@ rpcmp_api.checkConnection()
     .catch(() => {
         navigationView.append(new ServerDownPage());
         loader.dispose();
+    });
+
+firebase.Messaging.on('message',
+    ({ data }: { data: Object }) => {
+        console.log('Получили сообщение от Firebase: ' + JSON.stringify(data));
+    });
+
+firebase.Messaging.on('tokenChanged',
+    ({ token: newFirebaseToken }: { token: string }) => {
+        console.log(`Новый Firebase токен: ${newFirebaseToken}`);
+        let oldFirebaseToken = localStorage.getItem('firebaseToken');
+        if (oldFirebaseToken) localStorage.setItem('oldFirebaseToken', oldFirebaseToken);
+        localStorage.setItem('firebaseToken', newFirebaseToken);
+        localStorage.setItem('isNeedToUpdateFirebase', 'true');
     });
