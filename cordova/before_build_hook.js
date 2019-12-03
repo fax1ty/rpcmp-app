@@ -7,12 +7,10 @@ module.exports = function () {
         var data = JSON.parse(data);
 
         data.project_info = {
-            project_info: {
                 project_number: process.env.FIREBASE_GCM_SENDER_ID,
                 firebase_url: process.env.FIREBASE_DATABASE_URL,
                 project_id: process.env.FIREBASE_PROJECT_ID,
                 storage_bucket: process.env.FIREBASE_GOOGLE_STORAGE_BUCKET
-            }
         }
 
         data.client[0] = {
