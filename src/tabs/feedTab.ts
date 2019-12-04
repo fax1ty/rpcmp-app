@@ -5,7 +5,7 @@ import { FeedStory, FeedPost, StaticVolcanoRollUp } from '../libs/components';
 import rpcmp_api = require('../libs/rpcmp_api');
 import config = require('../config');
 
-let storyScroll = new ScrollView({ left: 0, right: 0, scrollbarVisible: false, direction: 'horizontal' });
+let storyScroll = new ScrollView({ left: 25, right: 25, top: 25, scrollbarVisible: false, direction: 'horizontal' });
 let newsScroll = new ScrollView({ left: 0, right: 0, top: 'prev() 25', bottom: 0, scrollbarVisible: false });
 
 export = new Tab({ left: 0, right: 0, top: 0, bottom: 0 })
