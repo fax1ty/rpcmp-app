@@ -22,15 +22,15 @@ export = new Tab({ left: 0, right: 0, top: 0, bottom: 0 })
                     .onTap(() => {
                         new RollUp({ title: 'Писание', colors: { background: currentStyle.colors.main, title: currentStyle.colors.opposite } })
                             .append(
-                                new WebView({ url: config.GOSPEL_URL, left: 0, right: 0, height: device.screenHeight * 0.75 })
+                                new WebView({ url: config.links.GOSPEL, left: 0, right: 0, height: device.screenHeight * 0.75 })
                             )
                     }),
                 new FeedStory({ background: 'https://i.imgur.com/UypoaXn.png', text: 'Макаронная вода', title: 'YouTube' }, { left: 'prev() 25' })
-                    .onTap(() => app.launch('https://www.youtube.com/user/RPCMPdotRU')),
+                    .onTap(() => app.launch(config.links.YOUTUBE)),
                 new FeedStory({ background: 'https://i.imgur.com/xTpx76q.png', text: '50 оттенков пасты', title: 'ВКонтакте' }, { left: 'prev() 25' })
-                    .onTap(() => app.launch('https://vk.com/rpcmp')),
+                    .onTap(() => app.launch(config.links.VK)),
                 new FeedStory({ background: 'https://i.imgur.com/rR9bOt5.png', text: 'Иногда здесь бывают люди', title: 'Сайт' }, { left: 'prev() 25' })
-                    .onTap(() => app.launch('https://www.rpcmp.ru'))
+                    .onTap(() => app.launch(config.links.SITE))
             );
 
         // Заглушка
