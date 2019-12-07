@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<widget id="ru.fax1ty.rpcmp" version="0.1.4" 
+<widget id="ru.fax1ty.rpcmp" version="0.1.5" 
   xmlns="http://www.w3.org/ns/widgets" 
   xmlns:android="http://schemas.android.com/apk/res/android">
   <name>RPCMP</name>
@@ -18,6 +18,7 @@
   <plugin name="cordova-plugin-native-geolocation" spec="https://github.com/fax1ty/cordova-plugin-native-geolocation.git" />
   <plugin name="cordova-plugin-datepicker" spec="https://github.com/fax1ty/cordova-plugin-datepicker.git" />
   <plugin name="cordova-gallery-api" spec="https://github.com/Collaborne/cordova-gallery-api.git" />
+  <plugin name="Calendar-PhoneGap-Plugin" spec="https://github.com/EddyVerbruggen/Calendar-PhoneGap-Plugin.git" />
 
   <!-- Соц.вход -->
   <plugin name="cordova-vk-auth" spec="https://github.com/iRapoo/cordova-vk-auth.git">

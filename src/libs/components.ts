@@ -1,9 +1,10 @@
-import { Composite, TabFolder, ImageView, ScrollView, TextView, ImageValue, Properties, device, CollectionView } from 'tabris';
+import { Composite, TabFolder, ImageView, ScrollView, TextView, ImageValue, Properties, device, CollectionView, permission, TextInput, contentView, ActivityIndicator, app } from 'tabris';
 import { currentStyle } from '..';
-import { RollUp, PopUp } from './ui';
+import { RollUp, PopUp, Notification } from './ui';
 import { MapPoint } from './interfaces';
 import moment = require('moment');
 import rpcmp_api = require('./rpcmp_api');
+import { getDistance, uploadImage } from './utils';
 
 export class BottomMenu extends Composite {
     constructor(tabFolder: TabFolder) {
@@ -36,74 +37,6 @@ export class BottomMenu extends Composite {
             c.children(ImageView).first().tintColor = currentStyle.colors.moreContrast;
             lastID = newID;
         }));
-    }
-}
-
-export class StaticVolcanoRollUp extends RollUp {
-    onVolcanoRemove = (cb: any) => this.on('volcanoRemove', cb);
-
-    constructor(point: MapPoint, marker?: TabrisMarker) {
-        super({ title: point.place.title, colors: { background: currentStyle.colors.main, title: currentStyle.colors.opposite } });
-
-        let imageScroll = new ScrollView({ left: 25, right: 25, height: 150, direction: 'horizontal', scrollbarVisible: false });
-        point.place.photos.forEach((url, i) => {
-            new ImageView({ top: 0, bottom: 0, left: i == 0 ? 0 : 'prev() 25', image: url })
-                .appendTo(imageScroll)
-        });
-        let notOwnerButton = new Composite({ padding: 15, highlightOnTouch: true, top: 'prev() 25', left: 25, right: 25, cornerRadius: 18, elevation: 3, background: currentStyle.colors.contrast })
-            .append(
-                new TextView({ alignment: 'centerX', textColor: currentStyle.colors.opposite, left: 0, right: 0, text: 'Святые приправы, я в деле!' }),
-            );
-        let ownerButton = new Composite({ padding: 15, highlightOnTouch: true, top: 'prev() 25', left: 25, right: 25, cornerRadius: 18, elevation: 3, background: currentStyle.colors.contrast })
-            .append(
-                new TextView({ alignment: 'centerX', textColor: currentStyle.colors.opposite, left: 0, right: 0, text: 'Сетерь с лица земли' }),
-            )
-            .onTap(() => {
-                new PopUp({
-                    textColor: currentStyle.colors.opposite, title: 'Вы в этом уверены?', text: 'Вы удалите данное мероприятие целиком и полностью. Оно больше не будет отображаться в списке, все подписавшиеся будут удалены и уведомлены об этом действии', buttons: {
-                        no: {
-                            color: currentStyle.colors.opposite,
-                            text: 'О, боги, нет',
-                            action: () => { }
-                        },
-                        ok: {
-                            color: 'red',
-                            text: 'Гори синим пламенем!', action: () => {
-                                rpcmp_api.map.removePoint({ id: point.id })
-                                    .then(() => {
-                                        this.trigger('volcanoRemove');
-                                        if (marker) marker.dispose();
-                                        this.close();
-                                    })
-                                    .catch(err => console.error(err))
-                            }
-                        }
-                    }
-                }, { background: currentStyle.colors.main })
-            });
-        this
-            .append(
-                imageScroll,
-                new Composite({ left: 25, right: 25, top: 'prev() 25', opacity: 0.75 })
-                    .append(
-                        new ImageView({ image: currentStyle.icons.volcano, tintColor: currentStyle.colors.opposite, height: 15 }),
-                        new TextView({ left: 'prev() 15', text: 'Вулкан', textColor: currentStyle.colors.opposite, centerY: 0 })
-                    ),
-                new TextView({ textColor: currentStyle.colors.opposite, top: 'prev() 25', left: 25, right: 25, text: point.place.text }),
-                new Composite({ top: 'prev() 25', left: 25, right: 25 })
-                    .append(
-                        new ImageView({ image: currentStyle.icons.compass, tintColor: currentStyle.colors.opposite, height: 15 }),
-                        new TextView({ centerY: 0, textColor: currentStyle.colors.opposite, left: 'prev() 15', right: 0, text: point.place.address }),
-                    ),
-                new Composite({ top: 'prev() 15', left: 25, right: 25 })
-                    .append(
-                        new ImageView({ image: currentStyle.icons.time, tintColor: currentStyle.colors.opposite, height: 15 }),
-                        new TextView({ centerY: 0, textColor: currentStyle.colors.opposite, left: 'prev() 15', right: 0, text: `${moment(point.date).format('DD.MM.YYYY - HH:MM (UTC ZZ)')}` }),
-                    ),
-                // Я в деле!
-                point.owner == parseInt(localStorage.getItem('id')) ? ownerButton : notOwnerButton,
-                new TextView({ top: 'prev() 25', opacity: 0.75, alignment: 'centerX', textColor: currentStyle.colors.opposite, left: 25, right: 25, text: `О мои фрикадели, с нами уже ${point.followers.length} человек(а)` }),
-            )
     }
 }
 
@@ -326,8 +259,7 @@ export class GalleryPicker extends Composite {
 
     private tapListener = () => {
         let photoAlbums = new Array<Array<GalleryItem>>();
-
-        galleryAPI.getAlbums(albums => {
+        let galleryLogic = () => galleryAPI.getAlbums(albums => {
             albums.forEach((album, i, arr) => {
                 galleryAPI.getMedia(album, async images => {
                     await photoAlbums.push(images);
@@ -376,7 +308,11 @@ export class GalleryPicker extends Composite {
                     }
                 })
             })
-        });
+        }, err => console.error(err));
+
+        if (permission.getAuthorizationStatus('storage') == 'granted') galleryLogic();
+        else permission.requestAuthorization('storage')
+            .then(status => { if (status == 'granted') galleryLogic(); });
     }
 
     constructor(values?: { isActive: boolean; }, properties?: Properties<Composite>) {
@@ -390,5 +326,271 @@ export class GalleryPicker extends Composite {
                 this.preview,
                 this.actionForeground
             );
+    }
+}
+
+export class StaticVolcanoRollUp extends RollUp {
+    onVolcanoRemove = (cb: any) => this.on('volcanoRemove', cb);
+
+    constructor(point: MapPoint, marker?: TabrisMarker) {
+        super({ title: point.place.title, colors: { background: currentStyle.colors.main, title: currentStyle.colors.opposite } });
+
+        let imageScroll = new ScrollView({ left: 25, right: 25, height: 150, direction: 'horizontal', scrollbarVisible: false });
+        point.place.photos.forEach((url, i) => {
+            new ImageView({ top: 0, bottom: 0, left: i == 0 ? 0 : 'prev() 25', image: url })
+                .appendTo(imageScroll)
+        });
+        let notOwnerButton = new Composite({ padding: 15, highlightOnTouch: true, top: 'prev() 25', left: 25, right: 25, cornerRadius: 18, elevation: 3, background: currentStyle.colors.contrast })
+            .append(
+                new TextView({ alignment: 'centerX', textColor: currentStyle.colors.opposite, left: 0, right: 0, text: 'Святые приправы, я в деле!' }),
+            );
+        let ownerButton = new Composite({ padding: 15, highlightOnTouch: true, top: 'prev() 25', left: 25, right: 25, cornerRadius: 18, elevation: 3, background: currentStyle.colors.contrast })
+            .append(
+                new TextView({ alignment: 'centerX', textColor: currentStyle.colors.opposite, left: 0, right: 0, text: 'Сетерь с лица земли' }),
+            )
+            .onTap(() => {
+                new PopUp({
+                    textColor: currentStyle.colors.opposite, title: 'Вы в этом уверены?', text: 'Вы удалите данное мероприятие целиком и полностью. Оно больше не будет отображаться в списке, все подписавшиеся будут удалены и уведомлены об этом действии', buttons: {
+                        no: {
+                            color: currentStyle.colors.opposite,
+                            text: 'О, боги, нет',
+                            action: () => { }
+                        },
+                        ok: {
+                            color: 'red',
+                            text: 'Гори синим пламенем!', action: () => {
+                                rpcmp_api.map.removePoint({ id: point.id })
+                                    .then(() => {
+                                        this.trigger('volcanoRemove');
+                                        if (marker) marker.dispose();
+                                        this.close();
+                                    })
+                                    .catch(err => console.error(err))
+                            }
+                        }
+                    }
+                }, { background: currentStyle.colors.main })
+            });
+        this
+            .append(
+                new ScrollView({ left: 0, right: 0, scrollbarVisible: false })
+                    .append(
+                        imageScroll,
+                        new Composite({ left: 25, right: 25, top: 'prev() 25', opacity: 0.75 })
+                            .append(
+                                new ImageView({ image: currentStyle.icons.volcano, tintColor: currentStyle.colors.opposite, height: 15 }),
+                                new TextView({ left: 'prev() 15', text: 'Вулкан', textColor: currentStyle.colors.opposite, centerY: 0 })
+                            ),
+                        new TextView({ textColor: currentStyle.colors.opposite, top: 'prev() 25', left: 25, right: 25, text: point.place.text }),
+                        new Composite({ left: 0, right: 0, top: 'prev() 15', padding: 15, background: currentStyle.colors.contrast, cornerRadius: 18, highlightOnTouch: true })
+                            .append(
+                                new ImageView({ image: currentStyle.icons.compass, tintColor: currentStyle.colors.opposite, height: 15 }),
+                                new TextView({ centerY: 0, textColor: currentStyle.colors.opposite, left: 'prev() 15', right: 0, text: point.place.address })
+                            )
+                            .onTap(() => app.launch(encodeURI(`https://yandex.ru/maps/?text=${point.place.address}`))),
+
+                        new Composite({ left: 0, right: 0, top: 'prev() 15', padding: 15, background: currentStyle.colors.contrast, cornerRadius: 18, highlightOnTouch: true })
+                            .append(
+                                new ImageView({ image: currentStyle.icons.time, tintColor: currentStyle.colors.opposite, height: 15 }),
+                                new TextView({ centerY: 0, textColor: currentStyle.colors.opposite, left: 'prev() 15', right: 0, text: `${moment(point.date).format('DD.MM.YYYY - HH:MM (UTC ZZ)')}` })
+                            )
+                            .onTap(() => {
+                                if (permission.getAuthorizationStatus('calendar') == 'granted') window.plugins.calendar.createEventInteractively(`Вулкан "${point.place.title}"`, point.place.address, point.place.text, point.date, point.date, () => { }, err => console.error(err));
+                                else permission.requestAuthorization('calendar');
+                            })
+                    ),
+                // Я в деле!
+                point.owner == parseInt(localStorage.getItem('id')) ? ownerButton : notOwnerButton,
+                new TextView({ top: 'prev() 25', opacity: 0.75, alignment: 'centerX', textColor: currentStyle.colors.opposite, left: 25, right: 25, text: `О мои фрикадели, с нами уже ${point.followers.length} человек(а)` })
+            )
+    }
+}
+
+export class GroupVolcanoRollUp extends RollUp {
+    constructor(point: MapPoint) {
+        super({ title: point.place.title, colors: { background: currentStyle.colors.main, title: currentStyle.colors.opposite } });
+
+        this
+            .append(
+                new Composite({ left: 0, right: 0 })
+                    .append(
+                        new ImageView({ left: 25, image: point.place.photos[0], width: 100, height: 100, cornerRadius: 18, scaleMode: 'fill', centerY: 0 }),
+                        new Composite({ left: 'prev() 25', right: 25, centerY: 0 })
+                            .append(
+                                new TextView({ left: 0, right: 0, textColor: currentStyle.colors.opposite, text: point.place.text.length > 55 ? point.place.text.slice(0, 55) + '...' : point.place.text }),
+                                new Composite({ left: 0, right: 0, top: 'prev() 15', padding: 15, background: currentStyle.colors.contrast, cornerRadius: 18, highlightOnTouch: true })
+                                    .append(
+                                        new ImageView({ image: currentStyle.icons.compass, tintColor: currentStyle.colors.opposite, height: 15 }),
+                                        new TextView({ centerY: 0, textColor: currentStyle.colors.opposite, left: 'prev() 15', right: 0, text: point.place.address }),
+                                    )
+                                    .onTap(() => app.launch(encodeURI(`https://yandex.ru/maps/?text=${point.place.address}`)))
+                            )
+                    ),
+                new CollectionView({
+                    left: 25, right: 25, top: 'prev() 25', height: device.screenHeight * 0.35, scrollbarVisible: false,
+                    itemCount: 10,
+                    createCell: () => {
+                        let cell = new Composite({ left: 0, right: 0 });
+                        new Composite({ padding: 15, background: currentStyle.colors.contrast, left: 0, right: 0, cornerRadius: 18, highlightOnTouch: true })
+                            .append(
+                                new ImageView({ centerY: 0, scaleMode: 'fill', height: 50, width: 50, cornerRadius: 8, background: currentStyle.colors.moreContrast }),
+                                new TextView({ class: 'place-title', left: 'prev() 15', right: 'next() 15', centerY: 0, text: 'Классный заголовок', font: 'bold 16px', textColor: currentStyle.colors.opposite }),
+                                new Composite({ right: 0, centerY: 0 })
+                                    .append(
+                                        new Composite()
+                                            .append(
+                                                new ImageView({ centerY: 0, height: 15, image: currentStyle.icons.compass, tintColor: currentStyle.colors.opposite }),
+                                                new TextView({ class: 'distance-text', centerY: 0, left: 'prev() 15', text: 'XX км', font: '16px', textColor: currentStyle.colors.opposite })
+                                            ),
+                                        new Composite({ left: 'prev() 15' })
+                                            .append(
+                                                new ImageView({ centerY: 0, height: 15, image: currentStyle.icons.menu.map, tintColor: currentStyle.colors.opposite }),
+                                                new TextView({ class: 'followers-text', centerY: 0, left: 'prev() 15', text: 'XX', font: '16px', textColor: currentStyle.colors.opposite })
+                                            )
+                                    )
+                            )
+                            .appendTo(cell);
+                        return cell;
+                    },
+                    updateCell: (cell: Composite, i: number) => {
+                        if (i != 0) cell.padding = { top: 25 }
+                        else cell.padding = 0;
+
+                        cell.find(Composite).first().onTap(() => {
+                            if ($('.place-rollup').length == 0) { let roll = new StaticVolcanoRollUp(point); roll.class = 'place-rollup'; }
+                        });
+                        cell.find(ImageView).first().image = '';
+                        cell.find('.place-title').first(TextView).text = 'Классное место';
+                        cell.find('.distance-text').first(TextView).text = `${getDistance(50, 50, 60, 60).toFixed(2)} км`;
+                        cell.find('.followers-text').first(TextView).text = '0';
+                    }
+                }),
+                new Composite({ padding: 15, highlightOnTouch: true, top: 'prev() 25', left: 25, right: 25, cornerRadius: 18, elevation: 3, background: currentStyle.colors.contrast })
+                    .append(
+                        new TextView({ alignment: 'centerX', textColor: currentStyle.colors.opposite, left: 0, right: 0, text: 'Новый вулкан' }),
+                    )
+            )
+    }
+}
+
+export class NewVolcanoRollUp extends RollUp {
+    isNeedToSave = false;
+    pointParent: MapPoint['id'];
+
+    constructor(posAddress: string, myPos: Array<number>, lastMarker: TabrisMarker, mapPoints: Array<MapPoint>, parent?: MapPoint['id']) {
+        super({ title: 'Новая метка', colors: { background: currentStyle.colors.main, title: currentStyle.colors.opposite } });
+        if (typeof parent == 'number') this.pointParent = parent;
+
+        let placeTitleInput = new TextInput({ id: 'place-title-input', textColor: currentStyle.colors.opposite, message: 'Отображаемое название', messageColor: currentStyle.colors.opposite, floatMessage: false, left: 0, right: 0, style: 'none', centerY: 0, keyboardAppearanceMode: 'ontouch' });
+        let placeTextInput = new TextInput({ type: 'multiline', maxChars: 150, id: 'place-text-input', textColor: currentStyle.colors.opposite, message: 'Описание', messageColor: currentStyle.colors.opposite, floatMessage: false, left: 0, right: 0, style: 'none', centerY: 0, keyboardAppearanceMode: 'ontouch' });
+        let placeAddressInput = new TextInput({ id: 'place-address-input', textColor: currentStyle.colors.opposite, message: `Адрес (можно автоматически определить)`, messageColor: currentStyle.colors.opposite, floatMessage: false, left: 0, right: 'next() 15', style: 'none', centerY: 0, keyboardAppearanceMode: 'ontouch' });
+        let placeDateInput = new TextInput({ id: 'place-date-input', textColor: currentStyle.colors.opposite, message: 'Дата (можно выбрать справа)', messageColor: currentStyle.colors.opposite, floatMessage: false, left: 0, right: 'next() 15', style: 'none', centerY: 0, keyboardAppearanceMode: 'ontouch' });
+
+        let counter = new TextView({ text: `${placeTextInput.text.length}/${placeTextInput.maxChars}`, textColor: currentStyle.colors.opposite, top: 'prev() 15', right: 25 });
+
+        let date = new Date();
+
+        placeAddressInput.text = posAddress;
+        placeDateInput.text = `${moment(date).format('DD.MM.YYYY - HH:MM (UTC ZZ)')}`;
+
+        let pickersScroll = new ScrollView({ left: 25, right: 25, top: 'prev() 25', direction: 'horizontal', scrollbarVisible: false })
+            .append(
+                new GalleryPicker(),
+                new GalleryPicker({ isActive: false }, { left: 'prev() 25' }),
+                new GalleryPicker({ isActive: false }, { left: 'prev() 25' }),
+                new GalleryPicker({ isActive: false }, { left: 'prev() 25' }),
+                new GalleryPicker({ isActive: false }, { left: 'prev() 25' })
+            );
+        pickersScroll.find(GalleryPicker).forEach((picker, i, pickers) => {
+            picker.onPick(() => { pickers[i + 1].isActive = true; });
+            picker.onDepick(() => pickers[i + 1].isActive = false);
+        });
+
+        this
+            .append(
+                new TextView({ left: 25, right: 25, text: 'Опишите Ваше место: как оно называется, что оно может предложить, когда будет происходить данное мероприятие и добавьте пару фото, чтобы незнакомцы понимали о чём идёт речь', textColor: currentStyle.colors.opposite }),
+                new ScrollView({ left: 0, right: 0, top: 'prev() 25', height: device.screenHeight * 0.5, scrollbarVisible: false })
+                    .append(
+                        new Composite({ padding: 5, left: 25, right: 25, background: currentStyle.colors.contrast, cornerRadius: 18 })
+                            .append(placeTitleInput),
+                        new Composite({ padding: 5, top: 'prev() 15', left: 25, right: 25, background: currentStyle.colors.contrast, cornerRadius: 18 })
+                            .append(placeTextInput
+                                .onInput(({ text }) => counter.text = `${text.length}/${placeTextInput.maxChars}`)
+                            ),
+                        counter,
+                        new Composite({ padding: 5, top: 'prev() 15', left: 25, right: 25, background: currentStyle.colors.contrast, cornerRadius: 18 })
+                            .append
+                            (
+                                placeAddressInput,
+                                new ImageView({ right: 15, image: currentStyle.icons.compass, tintColor: '#fff', padding: 10, background: currentStyle.colors.moreContrast, cornerRadius: 30 / 4, highlightOnTouch: true, width: 30, height: 30, centerY: 0 })
+                                    .onTap(() => {
+                                        rpcmp_api.utils.reverseGeocode({ point: myPos })
+                                            .then(myPosData => {
+                                                placeAddressInput.text = `${myPosData.country}, ${myPosData.city}${myPosData.road ? `, ${myPosData.road}` : ''}${myPosData.house_number ? `, ${myPosData.house_number}` : ''}`;
+                                                new Notification({ image: currentStyle.icons.lightBulb, colors: { background: currentStyle.colors.main, text: currentStyle.colors.opposite }, closeCondition: { autoDuration: 3 * 1000 }, title: 'Сообщение', text: 'Адрес был автоматически определён по Вашему местоположению' });
+                                            })
+                                            .catch(err => {
+                                                console.error(err);
+                                                new Notification({ image: currentStyle.icons.lightBulb, colors: { background: currentStyle.colors.main, text: currentStyle.colors.opposite }, title: 'Ошибка', text: 'Что-то пошло не так, попробуйте ещё раз' });
+                                            });
+                                    })
+                            ),
+                        new Composite({ padding: 5, top: 'prev() 15', left: 25, right: 25, background: currentStyle.colors.contrast, cornerRadius: 18 })
+                            .append(
+                                placeDateInput,
+                                new ImageView({ right: 15, image: currentStyle.icons.time, tintColor: '#fff', padding: 10, background: currentStyle.colors.moreContrast, cornerRadius: 30 / 4, highlightOnTouch: true, width: 30, height: 30, centerY: 0 })
+                                    .onTap(() => {
+                                        datePicker.show({ mode: 'datetime', date: date, androidTheme: currentStyle.isLightStatusBar ? 0 : 4, doneButtonColor: currentStyle.colors.contrast, cancelButtonColor: currentStyle.colors.contrast, allowOldDates: false, minDate: date }, data => {
+                                            date = new Date(data);
+                                            placeDateInput.text = `${moment(date).format('DD.MM.YYYY - HH:MM (UTC ZZ)')}`;
+                                        }, err => console.error(err));
+                                    })
+                            ),
+                        pickersScroll,
+                        new TextView({ top: 'prev() 15', left: 25, right: 25, text: 'Добавьте, как минимум, 1 фото. Обычно, это логотип места. Если его нет, хватит и фотки с iPhone 4S', textColor: currentStyle.colors.opposite }),
+                        new Composite({ left: 25, right: 25, top: 'prev() 25', opacity: 0.75 })
+                            .append(
+                                new ImageView({ image: currentStyle.icons.volcano, tintColor: currentStyle.colors.opposite, height: 15 }),
+                                new TextView({ left: 'prev() 15', text: 'Вулкан', textColor: currentStyle.colors.opposite, centerY: 0 })
+                            )
+                    ),
+                new Composite({ padding: 20, top: 'prev() 25', left: 25, right: 25, background: currentStyle.colors.moreContrast, cornerRadius: 18, highlightOnTouch: true })
+                    .append(
+                        new TextView({ text: 'Добавить', textColor: currentStyle.colors.opposite, left: 0, right: 0, alignment: 'centerX' })
+                    )
+                    .onTap(() => {
+                        let photos = pickersScroll.children(GalleryPicker).toArray().filter(el => el.pickedPhoto.length > 0);
+                        if (!placeAddressInput.text || !placeDateInput.text || !placeTextInput.text || !placeTitleInput.text || photos.length == 0) {
+                            navigator.vibrate([100, 100, 100]);
+                            if (!placeAddressInput.text) placeAddressInput.parent().animate({ opacity: 0 }, { duration: 500, repeat: 1, reverse: true });
+                            if (!placeDateInput.text) placeDateInput.parent().animate({ opacity: 0 }, { duration: 500, repeat: 1, reverse: true });
+                            if (!placeTextInput.text) placeTextInput.parent().animate({ opacity: 0 }, { duration: 500, repeat: 1, reverse: true });
+                            if (!placeTitleInput.text) placeTitleInput.parent().animate({ opacity: 0 }, { duration: 500, repeat: 1, reverse: true });
+                            if (photos.length == 0) pickersScroll.animate({ opacity: 0 }, { duration: 500, repeat: 1, reverse: true });
+                        }
+                        else {
+                            let loader = new Composite({ left: 0, right: 0, top: 0, bottom: 0 })
+                                .append(
+                                    new Composite({ left: 0, right: 0, top: 0, bottom: 0, background: '#000', opacity: 0.5 }),
+                                    new ActivityIndicator({ centerX: 0, centerY: 0, width: 80, height: 80, padding: 20, tintColor: currentStyle.colors.moreContrast, background: currentStyle.colors.main, cornerRadius: 18 })
+                                )
+                                .onTap(() => { })
+                                .appendTo(contentView);
+                            Promise.all(photos.map<Promise<string>>(picker => uploadImage(picker.thumbnail.replace('file://', ''))))
+                                .then(uploadedImages => {
+                                    rpcmp_api.map.addPoint({ parent: this.pointParent ? this.pointParent : null, type: 'volcano', date: date, place: { title: placeTitleInput.text, text: placeTextInput.text, photos: uploadedImages, address: placeAddressInput.text }, position: lastMarker.position })
+                                        .then(data => {
+                                            this.isNeedToSave = true;
+                                            this.close();
+                                            loader.dispose();
+                                            lastMarker.on('tap', () => new StaticVolcanoRollUp(data.point, lastMarker));
+                                            mapPoints.push(data.point);
+                                        })
+                                        .catch(err => { console.error('Добавление точки', err); loader.dispose(); });
+                                })
+                                .catch(err => { console.error(err); loader.dispose(); });
+                        }
+                    })
+            )
     }
 }

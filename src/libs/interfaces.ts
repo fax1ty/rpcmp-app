@@ -37,6 +37,9 @@ export interface AddPointResponseData {
 }
 
 export interface MapPoint {
+    verified: boolean;
+    parent: MapPoint['id'];
+    children: Array<MapPoint>;
     id: string;
     followers: Array<User['id']>;
     owner: User['id'];

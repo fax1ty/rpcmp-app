@@ -28,7 +28,7 @@ export = {
         addFirebaseToken: (values: { newToken: string, oldToken: string; }) => call<AddFirebaseTokenResponseData>('users.addFirebaseToken', Object.assign(values, { token: localStorage.getItem('token') }))
     },
     map: {
-        addPoint: (values: { type: 'volcano', place: PointPlace, position: MapPoint['position'], date: MapPoint['date'] }) => call<AddPointResponseData>('map.addPoint', Object.assign(values, { token: localStorage.getItem('token') })),
+        addPoint: (values: { parent: MapPoint['id'] | null, type: 'volcano', place: PointPlace, position: MapPoint['position'], date: MapPoint['date'] }) => call<AddPointResponseData>('map.addPoint', Object.assign(values, { token: localStorage.getItem('token') })),
         removePoint: (values: { id: MapPoint['id']; }) => call<RemovePointResponseData>('map.removePoint', Object.assign(values, { token: localStorage.getItem('token') })),
         getPointData: (values: { id: MapPoint['id']; }) => call<GetPointDataResponseData>('map.getPointData', Object.assign(values, { token: localStorage.getItem('token') })),
         followPlace: (values: { id: MapPoint['id']; }) => call<FollowPlaceResponseData>('map.followPlace', Object.assign(values, { token: localStorage.getItem('token') })),
