@@ -70,5 +70,5 @@ firebase.Messaging.on('tokenChanged',
         let oldFirebaseToken = localStorage.getItem('firebaseToken');
         if (oldFirebaseToken) localStorage.setItem('oldFirebaseToken', oldFirebaseToken);
         localStorage.setItem('firebaseToken', newFirebaseToken);
-        localStorage.setItem('isNeedToUpdateFirebase', 'yes');
+        localStorage.setItem('isNeedToUpdateFirebase', 'true');
     });

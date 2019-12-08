@@ -10,10 +10,10 @@ export class AppPage extends Page {
     constructor() {
         super({ left: 0, right: 0, top: 0, bottom: 0, background: currentStyle.colors.main });
 
-        if (localStorage.getItem('isNeedToUpdateFirebase') === 'yes') {
+        if (localStorage.getItem('isNeedToUpdateFirebase') === 'true') {
             let oldFirebaseToken = localStorage.getItem('oldFirebaseToken');
             rpcmp_api.users.addFirebaseToken({ newToken: localStorage.getItem('firebaseToken'), oldToken: oldFirebaseToken ? oldFirebaseToken : '' })
-                .then(() => localStorage.setItem('isNeedToUpdateFirebase', 'no'))
+                .then(() => localStorage.setItem('isNeedToUpdateFirebase', 'false'))
                 .catch(err => console.log(err));
         }
 
