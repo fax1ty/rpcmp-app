@@ -15,7 +15,7 @@
   </plugin>
   <plugin name="cordova-plugin-vibration" spec="https://github.com/maxappsmobile/cordova-plugin-vibration.git" />
   <plugin name="cordova-plugin-native-geolocation" spec="https://github.com/fax1ty/cordova-plugin-native-geolocation.git" />
-  <plugin name="tabris-plugin-firebase" spec="https://github.com/fax1ty/tabris-plugin-firebase.git"/>
+  <!-- <plugin name="tabris-plugin-firebase" spec="https://github.com/fax1ty/tabris-plugin-firebase.git"/> -->
   <plugin name="cordova-plugin-datepicker" spec="https://github.com/fax1ty/cordova-plugin-datepicker.git" />
   <plugin name="cordova-gallery-api" spec="https://github.com/fax1ty/cordova-gallery-api.git" />
 
