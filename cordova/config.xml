@@ -9,28 +9,27 @@
   <preference name="DisallowOverscroll" value="true" />
   <preference name="Orientation" value="portrait" />
   <preference name="UseStrictSSL" value="false" />
-  <preference name="android-targetSdkVersion" value="29" />
 
-  <plugin name="tabris-plugin-maps" spec="https://github.com/fax1ty/tabris-plugin-maps.git">
+  <!-- <plugin name="tabris-plugin-maps" spec="https://github.com/fax1ty/tabris-plugin-maps.git">
     <variable name="ANDROID_API_KEY" value="$ANDROID_API_KEY" />
-  </plugin>
-  <plugin name="cordova-plugin-vibration" spec="https://github.com/maxappsmobile/cordova-plugin-vibration.git" />
-  <plugin name="cordova-plugin-native-geolocation" spec="https://github.com/fax1ty/cordova-plugin-native-geolocation.git" />
+  </plugin> -->
+  <!-- <plugin name="cordova-plugin-vibration" spec="https://github.com/maxappsmobile/cordova-plugin-vibration.git" /> -->
+  <!-- <plugin name="cordova-plugin-native-geolocation" spec="https://github.com/fax1ty/cordova-plugin-native-geolocation.git" /> -->
   <!-- <plugin name="tabris-plugin-firebase" spec="https://github.com/fax1ty/tabris-plugin-firebase.git"/> -->
   <plugin name="cordova-plugin-datepicker" spec="https://github.com/fax1ty/cordova-plugin-datepicker.git" />
   <plugin name="cordova-gallery-api" spec="https://github.com/fax1ty/cordova-gallery-api.git" />
 
   <!-- Соц.вход -->
-  <plugin name="cordova-vk-auth" spec="https://github.com/iRapoo/cordova-vk-auth.git">
+  <!-- <plugin name="cordova-vk-auth" spec="https://github.com/iRapoo/cordova-vk-auth.git">
     <variable name="VK_APP_ID" value="$VK_APP_ID" />
   </plugin>
   <plugin name="cordova-plugin-googleplus" source="https://github.com/EddyVerbruggen/cordova-plugin-googleplus.git">
     <variable name="PLAY_SERVICES_VERSION" value="17.0.0" />
     <variable name="REVERSED_CLIENT_ID" value="$REVERSED_CLIENT_ID" />
-  </plugin>
+  </plugin> -->
 
   <platform name="android">
-    <hook type="before_build" src="./before_build_hook.js" />
+    <!-- <hook type="before_build" src="./before_build_hook.js" /> -->
 
     <edit-config file="app/src/main/AndroidManifest.xml" target="/manifest/application" mode="merge">
       <application android:usesCleartextTraffic="true" />
