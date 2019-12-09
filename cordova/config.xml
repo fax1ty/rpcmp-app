@@ -13,6 +13,9 @@
   <plugin name="cordova-plugin-datepicker" spec="https://github.com/fax1ty/cordova-plugin-datepicker.git" />
   <plugin name="cordova-gallery-api" spec="https://github.com/fax1ty/cordova-gallery-api.git" />
 
+  <plugin name="cordova-plugin-androidx" spec="https://github.com/dpa99c/cordova-plugin-androidx.git" />
+  <plugin name="cordova-plugin-androidx-adapter" spec="https://github.com/dpa99c/cordova-plugin-androidx-adapter.git" />
+
   <platform name="android">
 
     <edit-config file="app/src/main/AndroidManifest.xml" target="/manifest/application" mode="merge">
